@@ -1,0 +1,831 @@
+     1→"use client";
+     2→
+     3→import { useState, useEffect, useRef, useCallback } from "react";
+     4→import { useRouterStore, useUIStore } from "@/stores/router";
+     5→import { GlassCard, GlassButton } from "@/components/vms/GlassCard";
+     6→import { Stepper } from "@/components/vms/Stepper";
+     7→import { Input } from "@/components/ui/input";
+     8→import { Textarea } from "@/components/ui/textarea";
+     9→import { Label } from "@/components/ui/label";
+    10→import { Checkbox } from "@/components/ui/checkbox";
+    11→import {
+    12→  Select,
+    13→  SelectContent,
+    14→  SelectGroup,
+    15→  SelectItem,
+    16→  SelectLabel,
+    17→  SelectTrigger,
+    18→  SelectValue,
+    19→} from "@/components/ui/select";
+    20→import { toast } from "sonner";
+    21→import { t } from "@/lib/i18n";
+    22→import { cn } from "@/lib/utils";
+    23→import {
+    24→  ArrowLeft,
+    25→  ArrowRight,
+    26→  Upload,
+    27→  FileText,
+    28→  Image as ImageIcon,
+    29→  X,
+    30→  Check,
+    31→  Copy,
+    32→  ShieldCheck,
+    33→  User,
+    34→  Building2,
+    35→  Calendar,
+    36→  Phone,
+    37→  Mail,
+    38→  IdCard,
+    39→  Loader2,
+    40→  Sparkles,
+    41→  Home,
+    42→  Search,
+    43→  AlertCircle,
+    44→} from "lucide-react";
+    45→
+    46→interface StaffMember {
+    47→  id: string;
+    48→  fullName: string;
+    49→  email: string;
+    50→  department: { id: string; name: string };
+    51→}
+    52→
+    53→interface UploadedDoc {
+    54→  docType: string;
+    55→  fileName: string;
+    56→  filePath: string;
+    57→  fileSize: number;
+    58→  mimeType: string;
+    59→  previewUrl?: string;
+    60→}
+    61→
+    62→interface FormData {
+    63→  fullName: string;
+    64→  icPassportNo: string;
+    65→  phone: string;
+    66→  email: string;
+    67→  company: string;
+    68→  purpose: string;
+    69→  hostStaffId: string;
+    70→  expectedVisitDate: string;
+    71→  pdpaConsent: boolean;
+    72→}
+    73→
+    74→const STEPS = [
+    75→  { id: 1, label: "Maklumat", labelEn: "Information" },
+    76→  { id: 2, label: "Muat Naik ID", labelEn: "Upload ID" },
+    77→  { id: 3, label: "Semak & Hantar", labelEn: "Review & Submit" },
+    78→];
+    79→
+    80→const DOC_TYPES = [
+    81→  { value: "mykad", label: "MyKad", labelEn: "MyKad" },
+    82→  { value: "passport", label: "Pasport", labelEn: "Passport" },
+    83→  { value: "license", label: "Lesen Memandu", labelEn: "Driving License" },
+    84→  { value: "other", label: "Lain-lain", labelEn: "Other" },
+    85→];
+    86→
+    87→const ALLOWED_MIME = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
+    88→const MAX_SIZE = 5 * 1024 * 1024;
+    89→
+    90→const EMPTY_FORM: FormData = {
+    91→  fullName: "",
+    92→  icPassportNo: "",
+    93→  phone: "",
+    94→  email: "",
+    95→  company: "",
+    96→  purpose: "",
+    97→  hostStaffId: "",
+    98→  expectedVisitDate: "",
+    99→  pdpaConsent: false,
+   100→};
+   101→
+   102→export function VisitorRegisterView() {
+   103→  const { language } = useUIStore();
+   104→  const { navigate, back } = useRouterStore();
+   105→
+   106→  const [step, setStep] = useState(1);
+   107→  const [form, setForm] = useState<FormData>(EMPTY_FORM);
+   108→  const [documents, setDocuments] = useState<UploadedDoc[]>([]);
+   109→  const [staff, setStaff] = useState<StaffMember[]>([]);
+   110→  const [staffLoading, setStaffLoading] = useState(true);
+   111→  const [uploading, setUploading] = useState(false);
+   112→  const [submitting, setSubmitting] = useState(false);
+   113→  const [selectedDocType, setSelectedDocType] = useState("mykad");
+   114→  const [success, setSuccess] = useState<{ referenceCode: string } | null>(null);
+   115→  const [copied, setCopied] = useState(false);
+   116→  const fileInputRef = useRef<HTMLInputElement>(null);
+   117→  const [dragActive, setDragActive] = useState(false);
+   118→
+   119→  useEffect(() => {
+   120→    let cancelled = false;
+   121→    (async () => {
+   122→      try {
+   123→        const res = await fetch("/api/staff");
+   124→        const json = await res.json();
+   125→        if (!cancelled && json.success && Array.isArray(json.data)) {
+   126→          setStaff(json.data);
+   127→        }
+   128→      } catch {
+   129→        if (!cancelled) {
+   130→          toast.error(language === "bm" ? "Gagal memuatkan senarai staf." : "Failed to load staff list.");
+   131→        }
+   132→      } finally {
+   133→        if (!cancelled) setStaffLoading(false);
+   134→      }
+   135→    })();
+   136→    return () => {
+   137→      cancelled = true;
+   138→    };
+   139→  }, [language]);
+   140→
+   141→  // Cleanup preview URLs on unmount
+   142→  useEffect(() => {
+   143→    return () => {
+   144→      documents.forEach((d) => {
+   145→        if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+   146→      });
+   147→    };
+   148→     
+   149→  }, []);
+   150→
+   151→  const set = <K extends keyof FormData>(key: K, value: FormData[K]) => {
+   152→    setForm((prev) => ({ ...prev, [key]: value }));
+   153→  };
+   154→
+   155→  // Group staff by department
+   156→  const staffByDept = staff.reduce((acc, s) => {
+   157→    const deptName = s.department?.name || (language === "bm" ? "Tiada Jabatan" : "No Department");
+   158→    if (!acc[deptName]) acc[deptName] = [];
+   159→    acc[deptName].push(s);
+   160→    return acc;
+   161→  }, {} as Record<string, StaffMember[]>);
+   162→
+   163→  const selectedStaff = staff.find((s) => s.id === form.hostStaffId);
+   164→
+   165→  // ===== Step 1 validation =====
+   166→  const step1Errors = (): string[] => {
+   167→    const errs: string[] = [];
+   168→    if (!form.fullName || form.fullName.trim().length < 3)
+   169→      errs.push(language === "bm" ? "Nama penuh diperlukan (minimum 3 aksara)." : "Full name is required (min 3 chars).");
+   170→    if (!form.icPassportNo || form.icPassportNo.trim().length < 5)
+   171→      errs.push(language === "bm" ? "No. MyKad/Pasport diperlukan." : "MyKad/Passport No. is required.");
+   172→    if (!form.phone || form.phone.replace(/\D/g, "").length < 9)
+   173→      errs.push(language === "bm" ? "No. telefon tidak sah." : "Invalid phone number.");
+   174→    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+   175→      errs.push(language === "bm" ? "Format e-mel tidak sah." : "Invalid email format.");
+   176→    if (!form.purpose || form.purpose.trim().length < 5)
+   177→      errs.push(language === "bm" ? "Tujuan urusan diperlukan (minimum 5 aksara)." : "Purpose is required (min 5 chars).");
+   178→    if (!form.hostStaffId)
+   179→      errs.push(language === "bm" ? "Sila pilih staf yang hendak ditemui." : "Please select host staff.");
+   180→    if (!form.expectedVisitDate)
+   181→      errs.push(language === "bm" ? "Tarikh & masa lawatan diperlukan." : "Expected visit date is required.");
+   182→    return errs;
+   183→  };
+   184→
+   185→  // ===== Upload handling =====
+   186→  const handleFile = useCallback(
+   187→    async (file: File) => {
+   188→      if (!file) return;
+   189→
+   190→      if (!ALLOWED_MIME.includes(file.type)) {
+   191→        toast.error(
+   192→          language === "bm"
+   193→            ? `Format tidak disokong: ${file.type}. Hanya JPG, PNG, atau PDF.`
+   194→            : `Unsupported format: ${file.type}. Only JPG, PNG, or PDF.`
+   195→        );
+   196→        return;
+   197→      }
+   198→      if (file.size > MAX_SIZE) {
+   199→        toast.error(
+   200→          language === "bm"
+   201→            ? `Saiz fail melebihi 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+   202→            : `File exceeds 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+   203→        );
+   204→        return;
+   205→      }
+   206→
+   207→      setUploading(true);
+   208→      try {
+   209→        const fd = new FormData();
+   210→        fd.append("file", file);
+   211→        const res = await fetch("/api/upload", { method: "POST", body: fd });
+   212→        const json = await res.json();
+   213→        if (!json.success) {
+   214→          toast.error(json.message || (language === "bm" ? "Muat naik gagal." : "Upload failed."));
+   215→          return;
+   216→        }
+   217→
+   218→        const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined;
+   219→
+   220→        setDocuments((prev) => [
+   221→          ...prev,
+   222→          {
+   223→            docType: selectedDocType,
+   224→            fileName: json.data.fileName,
+   225→            filePath: json.data.filePath,
+   226→            fileSize: json.data.fileSize,
+   227→            mimeType: json.data.mimeType,
+   228→            previewUrl,
+   229→          },
+   230→        ]);
+   231→        toast.success(language === "bm" ? "Fail berjaya dimuat naik." : "File uploaded successfully.");
+   232→      } catch {
+   233→        toast.error(language === "bm" ? "Ralat rangkaian semasa muat naik." : "Network error during upload.");
+   234→      } finally {
+   235→        setUploading(false);
+   236→      }
+   237→    },
+   238→    [language, selectedDocType]
+   239→  );
+   240→
+   241→  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+   242→    const file = e.target.files?.[0];
+   243→    if (file) handleFile(file);
+   244→    e.target.value = ""; // reset so same file can be re-selected
+   245→  };
+   246→
+   247→  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+   248→    e.preventDefault();
+   249→    setDragActive(false);
+   250→    const file = e.dataTransfer.files?.[0];
+   251→    if (file) handleFile(file);
+   252→  };
+   253→
+   254→  const removeDoc = (idx: number) => {
+   255→    setDocuments((prev) => {
+   256→      const copy = [...prev];
+   257→      const removed = copy[idx];
+   258→      if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl);
+   259→      copy.splice(idx, 1);
+   260→      return copy;
+   261→    });
+   262→  };
+   263→
+   264→  // ===== Step navigation =====
+   265→  const goNext = () => {
+   266→    if (step === 1) {
+   267→      const errs = step1Errors();
+   268→      if (errs.length > 0) {
+   269→        errs.forEach((e) => toast.error(e));
+   270→        return;
+   271→      }
+   272→      setStep(2);
+   273→    } else if (step === 2) {
+   274→      if (documents.length === 0) {
+   275→        toast.error(
+   276→          language === "bm"
+   277→            ? "Sekurang-kurangnya satu dokumen pengenalan wajib dimuat naik."
+   278→            : "At least one identity document is required."
+   279→        );
+   280→        return;
+   281→      }
+   282→      setStep(3);
+   283→    }
+   284→  };
+   285→
+   286→  const goPrev = () => {
+   287→    if (step === 1) {
+   288→      back();
+   289→    } else {
+   290→      setStep((s) => s - 1);
+   291→    }
+   292→  };
+   293→
+   294→  // ===== Submit =====
+   295→  const submit = async () => {
+   296→    if (!form.pdpaConsent) {
+   297→      toast.error(language === "bm" ? "Sila tandakan kebenaran PDPA untuk meneruskan." : "Please accept PDPA consent to continue.");
+   298→      return;
+   299→    }
+   300→    setSubmitting(true);
+   301→    try {
+   302→      const payload = {
+   303→        fullName: form.fullName.trim(),
+   304→        icPassportNo: form.icPassportNo.trim(),
+   305→        phone: form.phone.trim(),
+   306→        email: form.email.trim() || undefined,
+   307→        company: form.company.trim() || undefined,
+   308→        purpose: form.purpose.trim(),
+   309→        hostStaffId: form.hostStaffId,
+   310→        expectedVisitDate: form.expectedVisitDate,
+   311→        pdpaConsent: true,
+   312→        documents: documents.map((d) => ({
+   313→          docType: d.docType,
+   314→          fileName: d.fileName,
+   315→          filePath: d.filePath,
+   316→          fileSize: d.fileSize,
+   317→          mimeType: d.mimeType,
+   318→        })),
+   319→      };
+   320→      const res = await fetch("/api/visits/register", {
+   321→        method: "POST",
+   322→        headers: { "Content-Type": "application/json" },
+   323→        body: JSON.stringify(payload),
+   324→      });
+   325→      const json = await res.json();
+   326→      if (!json.success) {
+   327→        toast.error(json.message || (language === "bm" ? "Pendaftaran gagal." : "Registration failed."));
+   328→        return;
+   329→      }
+   330→      setSuccess({ referenceCode: json.data.referenceCode });
+   331→      toast.success(language === "bm" ? "Pendaftaran berjaya!" : "Registration successful!");
+   332→    } catch {
+   333→      toast.error(language === "bm" ? "Ralat rangkaian." : "Network error.");
+   334→    } finally {
+   335→      setSubmitting(false);
+   336→    }
+   337→  };
+   338→
+   339→  const copyReference = async () => {
+   340→    if (!success) return;
+   341→    try {
+   342→      await navigator.clipboard.writeText(success.referenceCode);
+   343→      setCopied(true);
+   344→      toast.success(language === "bm" ? "Kod rujukan disalin." : "Reference code copied.");
+   345→      setTimeout(() => setCopied(false), 2000);
+   346→    } catch {
+   347→      toast.error(language === "bm" ? "Gagal menyalin." : "Failed to copy.");
+   348→    }
+   349→  };
+   350→
+   351→  const resetForm = () => {
+   352→    documents.forEach((d) => d.previewUrl && URL.revokeObjectURL(d.previewUrl));
+   353→    setDocuments([]);
+   354→    setForm(EMPTY_FORM);
+   355→    setStep(1);
+   356→    setSuccess(null);
+   357→  };
+   358→
+   359→  // ===== SUCCESS SCREEN =====
+   360→  if (success) {
+   361→    return (
+   362→      <div className="max-w-2xl mx-auto">
+   363→        <GlassCard className="p-6 sm:p-10 text-center">
+   364→          <div className="flex justify-center mb-5">
+   365→            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-600/40 pulse-live">
+   366→              <Check className="w-10 h-10 text-white" strokeWidth={3} />
+   367→            </div>
+   368→          </div>
+   369→          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+   370→            {t("registrationSuccess", language)}
+   371→          </h2>
+   372→          <p className="text-white/75 text-sm sm:text-base mb-6">
+   373→            {language === "bm"
+   374→              ? "Permohonan anda telah dihantar. Sila catat kod rujukan di bawah untuk semakan status."
+   375→              : "Your application has been submitted. Please note your reference code below for status check."}
+   376→          </p>
+   377→
+   378→          <div className="bg-white/5 border border-white/15 rounded-2xl p-5 sm:p-6 mb-6">
+   379→            <div className="text-xs uppercase tracking-wider text-cyan-200 font-semibold mb-2">
+   380→              {t("yourReference", language)}
+   381→            </div>
+   382→            <div className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-wider break-all">
+   383→              {success.referenceCode}
+   384→            </div>
+   385→            <button
+   386→              onClick={copyReference}
+   387→              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/30 text-cyan-100 text-sm font-semibold transition-all min-h-[44px]"
+   388→            >
+   389→              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+   390→              {copied ? (language === "bm" ? "Disalin!" : "Copied!") : (language === "bm" ? "Salin Kod" : "Copy Code")}
+   391→            </button>
+   392→          </div>
+   393→
+   394→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   395→            <GlassButton
+   396→              variant="outline"
+   397→              className="text-white min-h-[48px]"
+   398→              onClick={() => navigate("visitor-status", { code: success.referenceCode })}
+   399→            >
+   400→              <Search className="w-4 h-4" />
+   401→              {t("checkStatus", language)}
+   402→            </GlassButton>
+   403→            <GlassButton
+   404→              variant="primary"
+   405→              className="min-h-[48px]"
+   406→              onClick={() => {
+   407→                resetForm();
+   408→                navigate("landing");
+   409→              }}
+   410→            >
+   411→              <Home className="w-4 h-4" />
+   412→              {language === "bm" ? "Laman Utama" : "Back to Home"}
+   413→            </GlassButton>
+   414→          </div>
+   415→        </GlassCard>
+   416→      </div>
+   417→    );
+   418→  }
+   419→
+   420→  return (
+   421→    <div className="max-w-3xl mx-auto space-y-5">
+   422→      {/* Header */}
+   423→      <GlassCard variant="soft" className="p-5 sm:p-6">
+   424→        <div className="flex items-center justify-between gap-3 mb-4">
+   425→          <button
+   426→            onClick={goPrev}
+   427→            className="inline-flex items-center gap-1.5 text-white/80 hover:text-white text-sm font-medium transition-colors min-h-[44px] px-2"
+   428→          >
+   429→            <ArrowLeft className="w-4 h-4" />
+   430→            {t("back", language)}
+   431→          </button>
+   432→          <span className="text-xs font-semibold text-white/60 uppercase tracking-wide">
+   433→            {language === "bm" ? "Langkah" : "Step"} {step} / 3
+   434→          </span>
+   435→        </div>
+   436→        <h1 className="text-xl sm:text-2xl font-bold text-white mb-5">
+   437→          {t("visitorRegTitle", language)}
+   438→        </h1>
+   439→        <Stepper steps={STEPS} current={step} language={language} />
+   440→      </GlassCard>
+   441→
+   442→      {/* Step 1: Information */}
+   443→      {step === 1 && (
+   444→        <GlassCard className="p-5 sm:p-6 space-y-4">
+   445→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   446→            <Field label={t("fullName", language)} icon={User} required>
+   447→              <Input
+   448→                value={form.fullName}
+   449→                onChange={(e) => set("fullName", e.target.value)}
+   450→                placeholder={language === "bm" ? "Cth: Ahmad bin Ali" : "e.g. John Doe"}
+   451→                className="glass-input h-11"
+   452→              />
+   453→            </Field>
+   454→            <Field label={t("icPassport", language)} icon={IdCard} required>
+   455→              <Input
+   456→                value={form.icPassportNo}
+   457→                onChange={(e) => set("icPassportNo", e.target.value)}
+   458→                placeholder={language === "bm" ? "Cth: 901234-14-5678" : "e.g. 901234-14-5678"}
+   459→                className="glass-input h-11"
+   460→              />
+   461→            </Field>
+   462→            <Field label={t("visitorPhone", language)} icon={Phone} required>
+   463→              <Input
+   464→                value={form.phone}
+   465→                onChange={(e) => set("phone", e.target.value)}
+   466→                placeholder="012-345 6789"
+   467→                inputMode="tel"
+   468→                className="glass-input h-11"
+   469→              />
+   470→            </Field>
+   471→            <Field label={t("visitorEmail", language)} icon={Mail}>
+   472→              <Input
+   473→                type="email"
+   474→                value={form.email}
+   475→                onChange={(e) => set("email", e.target.value)}
+   476→                placeholder="nama@email.com"
+   477→                className="glass-input h-11"
+   478→              />
+   479→            </Field>
+   480→            <Field label={t("visitorCompany", language)} icon={Building2}>
+   481→              <Input
+   482→                value={form.company}
+   483→                onChange={(e) => set("company", e.target.value)}
+   484→                placeholder={language === "bm" ? "Cth: ABC Sdn Bhd" : "e.g. ABC Sdn Bhd"}
+   485→                className="glass-input h-11"
+   486→              />
+   487→            </Field>
+   488→            <Field label={t("expectedDate", language)} icon={Calendar} required>
+   489→              <Input
+   490→                type="datetime-local"
+   491→                value={form.expectedVisitDate}
+   492→                onChange={(e) => set("expectedVisitDate", e.target.value)}
+   493→                className="glass-input h-11"
+   494→              />
+   495→            </Field>
+   496→          </div>
+   497→
+   498→          <Field label={t("visitPurpose", language)} icon={Sparkles} required>
+   499→            <Textarea
+   500→              value={form.purpose}
+   501→              onChange={(e) => set("purpose", e.target.value)}
+   502→              placeholder={
+   503→                language === "bm"
+   504→                  ? "Nyatakan tujuan lawatan secara ringkas..."
+   505→                  : "Briefly state the purpose of your visit..."
+   506→              }
+   507→              className="glass-input min-h-[90px]"
+   508→              rows={3}
+   509→            />
+   510→          </Field>
+   511→
+   512→          <Field label={t("hostStaff", language)} icon={ShieldCheck} required>
+   513→            {staffLoading ? (
+   514→              <div className="flex items-center gap-2 text-white/70 text-sm h-11 px-3 rounded-lg bg-white/5 border border-white/10">
+   515→                <Loader2 className="w-4 h-4 animate-spin" />
+   516→                {language === "bm" ? "Memuatkan staf..." : "Loading staff..."}
+   517→              </div>
+   518→            ) : (
+   519→              <Select value={form.hostStaffId} onValueChange={(v) => set("hostStaffId", v)}>
+   520→                <SelectTrigger className="glass-input h-11 w-full">
+   521→                  <SelectValue placeholder={language === "bm" ? "Pilih staf / jabatan" : "Select staff / department"} />
+   522→                </SelectTrigger>
+   523→                <SelectContent className="max-h-80">
+   524→                  {staff.length === 0 ? (
+   525→                    <SelectItem value="_none" disabled>
+   526→                      {language === "bm" ? "Tiada staf aktif." : "No active staff."}
+   527→                    </SelectItem>
+   528→                  ) : (
+   529→                    Object.entries(staffByDept).map(([dept, members]) => (
+   530→                      <SelectGroup key={dept}>
+   531→                        <SelectLabel className="text-cyan-700 font-semibold">{dept}</SelectLabel>
+   532→                        {members.map((m) => (
+   533→                          <SelectItem key={m.id} value={m.id}>
+   534→                            {m.fullName}
+   535→                          </SelectItem>
+   536→                        ))}
+   537→                      </SelectGroup>
+   538→                    ))
+   539→                  )}
+   540→                </SelectContent>
+   541→              </Select>
+   542→            )}
+   543→          </Field>
+   544→
+   545→          <div className="flex justify-end pt-2">
+   546→            <GlassButton variant="primary" className="min-h-[48px] px-6" onClick={goNext}>
+   547→              {t("next", language)}
+   548→              <ArrowRight className="w-4 h-4" />
+   549→            </GlassButton>
+   550→          </div>
+   551→        </GlassCard>
+   552→      )}
+   553→
+   554→      {/* Step 2: Upload ID */}
+   555→      {step === 2 && (
+   556→        <GlassCard className="p-5 sm:p-6 space-y-4">
+   557→          <div>
+   558→            <h2 className="text-lg font-bold text-white mb-1">{t("uploadIdTitle", language)}</h2>
+   559→            <p className="text-sm text-white/70">{t("uploadIdDesc", language)}</p>
+   560→          </div>
+   561→
+   562→          {/* Doc type selector */}
+   563→          <div>
+   564→            <Label className="text-white/80 text-xs font-semibold mb-2 block">
+   565→              {language === "bm" ? "Jenis Dokumen" : "Document Type"}
+   566→            </Label>
+   567→            <div className="flex flex-wrap gap-2">
+   568→              {DOC_TYPES.map((dt) => (
+   569→                <button
+   570→                  key={dt.value}
+   571→                  onClick={() => setSelectedDocType(dt.value)}
+   572→                  className={cn(
+   573→                    "px-3 py-2 rounded-lg text-xs font-semibold border transition-all min-h-[40px]",
+   574→                    selectedDocType === dt.value
+   575→                      ? "bg-cyan-500/25 border-cyan-400/40 text-white"
+   576→                      : "bg-white/5 border-white/15 text-white/70 hover:bg-white/10"
+   577→                  )}
+   578→                >
+   579→                  {language === "en" ? dt.labelEn : dt.label}
+   580→                </button>
+   581→              ))}
+   582→            </div>
+   583→          </div>
+   584→
+   585→          {/* Drop zone */}
+   586→          <div
+   587→            onDragOver={(e) => {
+   588→              e.preventDefault();
+   589→              setDragActive(true);
+   590→            }}
+   591→            onDragLeave={() => setDragActive(false)}
+   592→            onDrop={onDrop}
+   593→            onClick={() => fileInputRef.current?.click()}
+   594→            className={cn(
+   595→              "cursor-pointer rounded-2xl border-2 border-dashed p-6 sm:p-8 text-center transition-all",
+   596→              dragActive
+   597→                ? "border-cyan-400 bg-cyan-400/10"
+   598→                : "border-white/25 bg-white/5 hover:bg-white/10 hover:border-white/40"
+   599→            )}
+   600→          >
+   601→            <input
+   602→              ref={fileInputRef}
+   603→              type="file"
+   604→              accept="image/jpeg,image/png,image/jpg,application/pdf"
+   605→              onChange={onInputChange}
+   606→              className="hidden"
+   607→            />
+   608→            <div className="flex flex-col items-center gap-3">
+   609→              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+   610→                {uploading ? (
+   611→                  <Loader2 className="w-7 h-7 text-white animate-spin" />
+   612→                ) : (
+   613→                  <Upload className="w-7 h-7 text-white" />
+   614→                )}
+   615→              </div>
+   616→              <div>
+   617→                <p className="text-sm font-semibold text-white">
+   618→                  {uploading
+   619→                    ? language === "bm" ? "Sedang memuat naik..." : "Uploading..."
+   620→                    : t("dragDrop", language)}
+   621→                </p>
+   622→                <p className="text-xs text-white/60 mt-1">JPG / PNG / PDF · {language === "bm" ? "Maks" : "Max"} 5MB</p>
+   623→              </div>
+   624→            </div>
+   625→          </div>
+   626→
+   627→          {/* Documents list */}
+   628→          {documents.length > 0 && (
+   629→            <div className="space-y-2">
+   630→              <Label className="text-white/80 text-xs font-semibold">
+   631→                {language === "bm" ? "Dokumen Dimuat Naik" : "Uploaded Documents"} ({documents.length})
+   632→              </Label>
+   633→              <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+   634→                {documents.map((doc, idx) => (
+   635→                  <div
+   636→                    key={idx}
+   637→                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
+   638→                  >
+   639→                    {/* Preview */}
+   640→                    <div className="w-12 h-12 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
+   641→                      {doc.previewUrl ? (
+   642→                         
+   643→                        <img src={doc.previewUrl} alt={doc.fileName} className="w-full h-full object-cover" />
+   644→                      ) : (
+   645→                        <FileText className="w-6 h-6 text-red-300" />
+   646→                      )}
+   647→                    </div>
+   648→                    <div className="flex-1 min-w-0">
+   649→                      <div className="text-sm text-white font-medium truncate">{doc.fileName}</div>
+   650→                      <div className="text-xs text-white/60 flex items-center gap-2">
+   651→                        <span className="uppercase">{doc.docType}</span>
+   652→                        <span>·</span>
+   653→                        <span>{(doc.fileSize / 1024).toFixed(0)} KB</span>
+   654→                      </div>
+   655→                    </div>
+   656→                    <button
+   657→                      onClick={() => removeDoc(idx)}
+   658→                      className="p-2 rounded-lg hover:bg-red-500/20 text-red-300 transition-colors flex-shrink-0"
+   659→                      aria-label="Remove"
+   660→                    >
+   661→                      <X className="w-4 h-4" />
+   662→                    </button>
+   663→                  </div>
+   664→                ))}
+   665→              </div>
+   666→            </div>
+   667→          )}
+   668→
+   669→          <div className="flex justify-between pt-2">
+   670→            <GlassButton variant="ghost" className="min-h-[48px]" onClick={goPrev}>
+   671→              <ArrowLeft className="w-4 h-4" />
+   672→              {t("previous", language)}
+   673→            </GlassButton>
+   674→            <GlassButton variant="primary" className="min-h-[48px] px-6" onClick={goNext}>
+   675→              {t("next", language)}
+   676→              <ArrowRight className="w-4 h-4" />
+   677→            </GlassButton>
+   678→          </div>
+   679→        </GlassCard>
+   680→      )}
+   681→
+   682→      {/* Step 3: Review & Submit */}
+   683→      {step === 3 && (
+   684→        <GlassCard className="p-5 sm:p-6 space-y-5">
+   685→          <div>
+   686→            <h2 className="text-lg font-bold text-white mb-1">{t("reviewTitle", language)}</h2>
+   687→            <p className="text-sm text-white/70">
+   688→              {language === "bm"
+   689→                ? "Sila semak maklumat di bawah sebelum menghantar."
+   690→                : "Please review the information below before submitting."}
+   691→            </p>
+   692→          </div>
+   693→
+   694→          {/* Review grid */}
+   695→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   696→            <ReviewItem icon={User} label={t("fullName", language)} value={form.fullName} />
+   697→            <ReviewItem icon={IdCard} label={t("icPassport", language)} value={form.icPassportNo} />
+   698→            <ReviewItem icon={Phone} label={t("visitorPhone", language)} value={form.phone} />
+   699→            <ReviewItem icon={Mail} label={t("visitorEmail", language)} value={form.email || "—"} />
+   700→            <ReviewItem icon={Building2} label={t("visitorCompany", language)} value={form.company || "—"} />
+   701→            <ReviewItem
+   702→              icon={Calendar}
+   703→              label={t("expectedDate", language)}
+   704→              value={form.expectedVisitDate ? new Date(form.expectedVisitDate).toLocaleString(language === "bm" ? "ms-MY" : "en-GB") : "—"}
+   705→            />
+   706→            <ReviewItem
+   707→              icon={ShieldCheck}
+   708→              label={t("hostStaff", language)}
+   709→              value={
+   710→                selectedStaff
+   711→                  ? `${selectedStaff.fullName} · ${selectedStaff.department?.name || ""}`
+   712→                  : "—"
+   713→              }
+   714→              full
+   715→            />
+   716→            <ReviewItem icon={Sparkles} label={t("visitPurpose", language)} value={form.purpose} full />
+   717→            <ReviewItem
+   718→              icon={ImageIcon}
+   719→              label={language === "bm" ? "Dokumen" : "Documents"}
+   720→              value={`${documents.length} ${language === "bm" ? "fail dimuat naik" : "file(s) uploaded"}`}
+   721→              full
+   722→            />
+   723→          </div>
+   724→
+   725→          {/* PDPA */}
+   726→          <div className="bg-amber-500/10 border border-amber-400/30 rounded-xl p-4 space-y-3">
+   727→            <div className="flex items-start gap-3">
+   728→              <AlertCircle className="w-5 h-5 text-amber-300 flex-shrink-0 mt-0.5" />
+   729→              <div className="flex-1">
+   730→                <div className="text-sm font-bold text-amber-100 mb-1">{t("pdpaNotice", language)}</div>
+   731→                <p className="text-xs text-amber-100/80 leading-relaxed">
+   732→                  {language === "bm"
+   733→                    ? "Maklumat peribadi yang diberikan akan diproses selaras dengan Akta Perlindungan Data Peribadi 2010 (PDPA) untuk tujuan pengurusan lawatan di PLTT Bintulu."
+   734→                    : "Personal data provided will be processed in accordance with the Personal Data Protection Act 2010 (PDPA) for visitor management purposes at PLTT Bintulu."}
+   735→                </p>
+   736→              </div>
+   737→            </div>
+   738→            <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-colors">
+   739→              <Checkbox
+   740→                checked={form.pdpaConsent}
+   741→                onCheckedChange={(v) => set("pdpaConsent", v === true)}
+   742→                className="mt-0.5 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+   743→              />
+   744→              <span className="text-sm text-white/90 leading-snug">{t("pdpaConsent", language)}</span>
+   745→            </label>
+   746→          </div>
+   747→
+   748→          <div className="flex justify-between pt-2">
+   749→            <GlassButton variant="ghost" className="min-h-[48px]" onClick={goPrev}>
+   750→              <ArrowLeft className="w-4 h-4" />
+   751→              {t("previous", language)}
+   752→            </GlassButton>
+   753→            <GlassButton
+   754→              variant="success"
+   755→              className="min-h-[48px] px-6"
+   756→              onClick={submit}
+   757→              disabled={submitting || !form.pdpaConsent}
+   758→            >
+   759→              {submitting ? (
+   760→                <>
+   761→                  <Loader2 className="w-4 h-4 animate-spin" />
+   762→                  {language === "bm" ? "Menghantar..." : "Submitting..."}
+   763→                </>
+   764→              ) : (
+   765→                <>
+   766→                  <Check className="w-4 h-4" />
+   767→                  {t("submitApplication", language)}
+   768→                </>
+   769→              )}
+   770→            </GlassButton>
+   771→          </div>
+   772→        </GlassCard>
+   773→      )}
+   774→    </div>
+   775→  );
+   776→}
+   777→
+   778→// ===== Helper components =====
+   779→
+   780→function Field({
+   781→  label,
+   782→  icon: Icon,
+   783→  required,
+   784→  children,
+   785→}: {
+   786→  label: string;
+   787→  icon?: React.ElementType;
+   788→  required?: boolean;
+   789→  children: React.ReactNode;
+   790→}) {
+   791→  return (
+   792→    <div className="space-y-1.5">
+   793→      <Label className="text-white/80 text-xs font-semibold flex items-center gap-1.5">
+   794→        {Icon && <Icon className="w-3.5 h-3.5" />}
+   795→        {label}
+   796→        {required && <span className="text-red-400">*</span>}
+   797→      </Label>
+   798→      {children}
+   799→    </div>
+   800→  );
+   801→}
+   802→
+   803→function ReviewItem({
+   804→  icon: Icon,
+   805→  label,
+   806→  value,
+   807→  full,
+   808→}: {
+   809→  icon: React.ElementType;
+   810→  label: string;
+   811→  value: string;
+   812→  full?: boolean;
+   813→}) {
+   814→  return (
+   815→    <div
+   816→      className={cn(
+   817→        "flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10",
+   818→        full && "sm:col-span-2"
+   819→      )}
+   820→    >
+   821→      <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-400/20 flex items-center justify-center flex-shrink-0">
+   822→        <Icon className="w-4 h-4 text-cyan-200" />
+   823→      </div>
+   824→      <div className="min-w-0 flex-1">
+   825→        <div className="text-[10px] uppercase tracking-wide text-white/60 font-semibold">{label}</div>
+   826→        <div className="text-sm text-white font-medium break-words">{value}</div>
+   827→      </div>
+   828→    </div>
+   829→  );
+   830→}
+   831→

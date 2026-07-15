@@ -1,0 +1,1718 @@
+     1→Total pages: 28
+     2→
+     3→===== PAGE 1 =====
+     4→PRODUCT REQUIREMENTS    DOCUMENT
+     5→Sistem  Pengurusan
+     6→Masuk–Keluar    Pelawat
+     7→Visitor Entry   &       Exit    Management      System  (VMS)
+     8→Organisasi
+     9→Pusat   Latihan Teknologi       Tinggi  Bintulu (PLTT   Bintulu)
+    10→Agensi
+    11→Jabatan Tenaga  Manusia (JTM),  Kementerian     Sumber  Manusia Malaysia
+    12→Dokumen
+    13→Product Requirements    Document        (PRD)   v1.0
+    14→AI      Development     Partner
+    15→Z.ai    —       Model   GLM‑5.2
+    16→Backend /       Database
+    17→Supabase        (PostgreSQL,    Auth,   Storage,        Realtime,       Edge    Functions)
+    18→Hosting /       Deployment
+    19→Netlify (Frontend       CI/CD)
+    20→Design  Language
+    21→Modern  UI/UX   –       Glassmorphism
+    22→Tarikh
+    23→14      Julai   2026
+    24→Status
+    25→Draf    untuk   Semakan (Draft  for     Review)
+    26→SULIT   /       CONFIDENTIAL    —       Untuk   kegunaan        dalaman PLTT    Bintulu &       JTM     sahaja          |               Prepared        as      an      implementation  blueprint       for     AI-assisted     development
+    27→
+    28→===== PAGE 2 =====
+    29→Kandungan               /               Table   of      Contents
+    30→1.      Executive       Summary
+    31→03
+    32→2.      Background      &       Problem Statement
+    33→03
+    34→3.      Goals   &       Objectives
+    35→04
+    36→4.      Scope   of      Work
+    37→04
+    38→5.      User    Roles   &       Personas
+    39→05
+    40→6.      End-to-End      Process Flow    (11     Steps)
+    41→06
+    42→7.      Visit   Status  State   Machine
+    43→08
+    44→8.      Functional      Requirements
+    45→09
+    46→9.      Non-Functional  Requirements
+    47→13
+    48→10.     System  Architecture
+    49→14
+    50→11.     Technology      Stack
+    51→15
+    52→12.     Supabase        Database        Design  (Schema +       Dummy   Data)
+    53→16
+    54→13.     Security,       RLS     Policies        &       Compliance      (PDPA)
+    55→20
+    56→14.     UI/UX   Design  Guidelines      –       Glassmorphism
+    57→21
+    58→15.     Screen  /       Module  Inventory
+    59→23
+    60→16.     Suggested       Enhancements    &       Future  Features
+    61→24
+    62→17.     Deployment      Plan    (Supabase       +       Netlify)
+    63→26
+    64→18.     Development     Roadmap &       Milestones
+    65→27
+    66→19.     Success Metrics /       KPIs
+    67→28
+    68→20.     Risks   &       Assumptions
+    69→28
+    70→21.     Appendix        –       Prompting       Z.ai    (GLM-5.2)
+    71→29
+    72→Nota:
+    73→        Dokumen ini     ditulis sebagai spesifikasi     teknikal        &       fungsian        yang    lengkap supaya  boleh   terus   digunakan       sebagai 
+    74→prompt  engineering     brief
+    75→        untuk
+    76→membangunkan    sistem  menggunakan     Z.ai    (GLM‑5.2),      dengan  Supabase        sebagai backend dan     Netlify sebagai platform        deployment.
+    77→
+    78→===== PAGE 3 =====
+    79→1.
+    80→Executive       Summary
+    81→Sistem  Pengurusan      Masuk–Keluar    Pelawat (Visitor        Management      System  –       VMS)    adalah  aplikasi        web     yang    dicadangkan     untuk   PLTT
+    82→Bintulu,        JTM,    bagi    menggantikan    proses  pendaftaran     pelawat secara  manual  (buku   log     fizikal)        dengan  satu    platform        digital yang
+    83→selamat,        boleh   dijejak (auditable),    dan     mesra   pengguna.       Sistem  ini     merekodkan      keseluruhan     kitaran hayat   lawatan –       daripada
+    84→permohonan      masuk,  pengesahan      identiti,       kelulusan       oleh    Pengawal        Keselamatan,    urusan  bersama staf,   pengesahan      penyelesaian
+    85→urusan, maklum  balas   pelawat,        sehingga        kelulusan       keluar  –       dalam   satu    aliran  kerja   (workflow)      berterusan.
+    86→Sistem  dicadangkan     dibangunkan     menggunakan     bantuan AI      
+    87→Z.ai    (model  GLM‑5.2)
+    88→        sebagai enjin   penjanaan       kod     (code   generation
+    89→copilot),       dengan  
+    90→Supabase
+    91→        sebagai backend-as-a-service    (pangkalan      data    PostgreSQL,     pengesahan      pengguna,       storan  fail,   dan     API
+    92→masa    nyata), serta   
+    93→Netlify
+    94→        sebagai platform        hosting/deployment      bahagian        hadapan (frontend).     Reka    bentuk  antara  muka    menggunakan
+    95→pendekatan      
+    96→glassmorphism
+    97→        –       permukaan       kaca    lut     sinar,  kesan   kabur   latar   (backdrop       blur),  sudut   bulat   lembut  dan     hierarki        visual  yang
+    98→bersih  –       bagi    memberikan      pengalaman      moden,  profesional     dan     mudah   digunakan       oleh    pelawat,        pengawal        keselamatan     dan     staf    JTM.
+    99→NILAI   PERNIAGAAN      (BUSINESS       VALUE)
+   100→Menghapuskan    buku    log     kertas  &       pengisian       manual  berulang        –       menjimatkan     masa    pendaftaran     pelawat.
+   101→Rekod   digital yang    lengkap untuk   audit   keselamatan,    siasatan        insiden,        dan     pematuhan       (compliance).
+   102→Ketertampakan   (visibility)    masa    nyata   bagi    Pengawal        Keselamatan     mengenai        siapa   berada  dalam   premis.
+   103→Akauntabiliti   jelas   –       setiap  peringkat       proses  direkod dengan  cap     masa    &       identiti        pelaksana       (audit  trail).
+   104→Maklum  balas   pelawat dikumpul        secara  sistematik      untuk   penambahbaikan  perkhidmatan    berterusan.
+   105→2.
+   106→Background      &       Problem Statement
+   107→Pada    masa    kini,   pengurusan      pelawat di      PLTT    Bintulu dijalankan      secara  manual  menggunakan     buku    log     fizikal di      kaunter Pengawal
+   108→Keselamatan.    Pendekatan      ini     mendatangkan    beberapa        isu     operasi:
+   109→ISU     SEDIA   ADA
+   110→KESAN   KEPADA  OPERASI
+   111→Rekod   fizikal mudah   rosak/hilang
+   112→Sukar   untuk   audit,  siasatan        insiden,        atau    simpanan        jangka  panjang.
+   113→Tiada   pengesahan      bukti   pengenalan      diri
+   114→sistematik
+   115→Risiko  keselamatan     –       identiti        pelawat tidak   dapat   disahkan/disimpan       dengan  selamat.
+   116→Tiada   rekod   status  urusan
+   117→(selesai/belum)
+   118→Pengawal        tidak   dapat   mengesahkan     urusan  benar-benar     selesai sebelum pelawat keluar.
+   119→Tiada   mekanisme       maklum  balas   pelawat
+   120→Ketiadaan       data    untuk   penambahbaikan  perkhidmatan    pelanggan.
+   121→Proses  masuk   &       keluar  mengambil       masa
+   122→Barisan menunggu,       pengalaman      pelawat kurang  memuaskan.
+   123→Tiada   dashboard/analitik
+   124→Pengurusan      sukar   membuat keputusan       berasaskan      data    (data-driven).
+   125→Sistem  VMS     ini     dicadangkan     bagi    menyelesaikan   isu-isu di      atas    melalui satu    platform        digital bersepadu       yang    merentasi       tiga    peranan
+   126→utama:  
+   127→Pelawat
+   128→,       
+   129→Pengawal        Keselamatan
+   130→,       dan     
+   131→Staf    JTM
+   132→,       disokong        oleh    
+   133→Admin
+   134→        untuk   pentadbiran     sistem.
+   135→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   136→Halaman 03
+   137→
+   138→===== PAGE 4 =====
+   139→3.
+   140→Goals   &       Objectives
+   141→#
+   142→OBJEKTIF
+   143→PENERANGAN      &       UKURAN  KEJAYAAN
+   144→O1
+   145→Digitalisasi    penuh   proses  pelawat
+   146→100%    pendaftaran,    kelulusan,      verifikasi      dan     keluar  pelawat direkod secara  digital –       sifar   buku
+   147→log     kertas.
+   148→O2
+   149→Pengesahan      identiti        yang    selamat
+   150→Setiap  pelawat memuat  naik    bukti   pengenalan      diri    (MyKad/Pasport) yang    disimpan        dengan
+   151→selamat di      Supabase        Storage.
+   152→O3
+   153→Kawalan akses   berlapis
+   154→Kelulusan       masuk   &       keluar  wajib   melalui Pengawal        Keselamatan;    urusan  wajib   disahkan        oleh
+   155→Staf.
+   156→O4
+   157→Ketertampakan   masa    nyata
+   158→Dashboard       langsung        memaparkan      bilangan        pelawat aktif   dalam   premis  pada    bila-bila       masa.
+   159→O5
+   160→Peningkatan     kualiti perkhidmatan
+   161→Borang  maklum  balas   pelawat dikumpul        bagi    setiap  lawatan &       dianalisis      melalui dashboard
+   162→admin.
+   163→O6
+   164→Audit   &       akauntabiliti
+   165→Setiap  tindakan        (approve,       verify, exit)   direkod dengan  cap     masa,   ID      pelaksana       &       catatan.
+   166→O7
+   167→Pengalaman      pengguna        moden
+   168→Antara  muka    glassmorphism   yang    responsif       (desktop        kaunter keselamatan     &       peranti mudah
+   169→alih).
+   170→4.
+   171→Scope   of      Work
+   172→✓       DALAM   SKOP    (IN-SCOPE)
+   173→Borang  permohonan      masuk   pelawat (web-based,     self-
+   174→service)
+   175→Muat    naik    bukti   pengenalan      diri    (imej/PDF)      semasa
+   176→pendaftaran
+   177→Kemasukan       maklumat        pelawat oleh    Pengawal        Keselamatan
+   178→(bagi   pihak   pelawat)
+   179→Semakan &       kelulusan       permohonan      oleh    Pengawal
+   180→Keselamatan
+   181→Pengesahan      urusan  selesai oleh    Staf    (dengan catatan)
+   182→Semakan status  pengesahan      staf    oleh    Pengawal
+   183→Keselamatan
+   184→Borang  maklum  balas   pelawat (customer       feedback)
+   185→Semakan pengisian       maklum  balas   oleh    Pengawal
+   186→Keselamatan
+   187→Kelulusan       &       catatan keluar  pelawat oleh    Pengawal
+   188→Keselamatan
+   189→Dashboard       status  lawatan masa    nyata   (Security       &       Admin)
+   190→Modul   pentadbiran     (pengurusan     pengguna,       staf,   laporan)
+   191→Log     audit   penuh   bagi    setiap  tindakan        dalam   sistem
+   192→Data    pangkalan       data    contoh  (dummy/seed     data)   untuk
+   193→demo    &       ujian
+   194→✗       LUAR    SKOP    (OUT-OF-SCOPE   –       PHASE   1)
+   195→Integrasi       perkakasan      fizikal (RFID/turnstile/boom    gate)
+   196→Pengecaman      wajah   (facial recognition)    automatik       –
+   197→dicadangkan     Fasa    2
+   198→Aplikasi        mudah   alih    native  (iOS/Android)   –       dicadangkan
+   199→Fasa    2
+   200→Integrasi       terus   dengan  sistem  HR/SSO  JTM     sedia   ada     –
+   201→dicadangkan     Fasa    2
+   202→Pencetakan      lencana (badge) fizikal automatik       –
+   203→dicadangkan     Fasa    2
+   204→Pembayaran      /       e-wallet
+   205→Item    "Luar   Skop"   disenaraikan    dalam   Bahagian        16      (Suggested
+   206→Enhancements)   sebagai cadangan        penambahbaikan  masa    hadapan.
+   207→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   208→Halaman 04
+   209→
+   210→===== PAGE 5 =====
+   211→5.
+   212→User    Roles   &       Personas
+   213→PERANAN
+   214→AKSES   SISTEM
+   215→KEUPAYAAN       &       TANGGUNGJAWAB   UTAMA
+   216→PELAWAT
+   217→Awam    –       borang  self-
+   218→service tanpa   login
+   219→(guest  link    /       OTP
+   220→telefon)
+   221→Isi     maklumat        tujuan  lawatan;        muat    naik    bukti   pengenalan      diri;   semak   status  permohonan
+   222→(pending/lulus/ditolak);        terima  notifikasi;     isi     borang  maklum  balas   selepas urusan  selesai.
+   223→PENGAWAL
+   224→KESELAMATAN
+   225→Log     masuk
+   226→(authenticated) –
+   227→kaunter kiosk   /       tablet
+   228→Daftar  pelawat bagi    pihak   pelawat;        semak   &       lulus/tolak     permohonan;     lihat   senarai pelawat aktif;  semak
+   229→status  verifikasi      staf;   semak   status  maklum  balas;  luluskan        &       catat   proses  keluar  pelawat.
+   230→STAF    JTM
+   231→Log     masuk
+   232→(authenticated) –
+   233→desktop/mudah   alih
+   234→Terima  notifikasi      kedatangan      pelawat;        sahkan  urusan  telah   selesai;        buat    catatan/nota    urusan; lihat   sejarah
+   235→lawatan berkaitan       diri    sendiri.
+   236→ADMIN   /
+   237→PENYELIA
+   238→Log     masuk
+   239→(authenticated) –       hak
+   240→istimewa        penuh
+   241→Urus    pengguna        &       peranan;        konfigurasi     sistem; laporan &       analitik;       audit   log;    urus    senarai staf/pengawal;
+   242→eksport data    pematuhan       PDPA.
+   243→Ringkasan       Persona
+   244→PELAWAT –       "ENCIK  ANWAR"
+   245→Kontraktor       luar    yang    datang  untuk   mesyuarat       dengan  Jabatan
+   246→Pentadbiran.    Mahukan proses  pendaftaran     yang    pantas  melalui telefon
+   247→pintar   tanpa   perlu   memuat  turun   aplikasi,       dan     mahu    tahu    status
+   248→kelulusannya    secara  telus.
+   249→PENGAWAL        KESELAMATAN     –       "CIK    SITI"
+   250→Bertugas        di      kaunter kemasukan       utama.  Memerlukan      paparan senarai
+   251→pelawat yang    jelas,  mudah   untuk   lulus/tolak     dengan  satu    ketikan,        dan
+   252→amaran  visual  bagi    pelawat yang    overstay        atau    belum   disahkan        staf.
+   253→STAF    JTM     –       "EN.    FAIZAL"
+   254→Pegawai yang    kerap   menerima        pelawat luar.   Perlu   cara    pantas  untuk
+   255→sahkan  urusan  selesai tanpa   perlu   login   sistem  berat   –       idealnya        melalui
+   256→pautan/notifikasi       telefon.
+   257→ADMIN   –       "PUAN   ROHANA"
+   258→Penyelia        yang    memerlukan      laporan bulanan bilangan        pelawat,        purata
+   259→masa     pemprosesan,    dan     skor    kepuasan        pelawat         untuk   pelaporan
+   260→pengurusan.
+   261→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   262→Halaman 05
+   263→
+   264→===== PAGE 6 =====
+   265→6.
+   266→End-to-End      Process Flow    –       11      Langkah Teras
+   267→Aliran  proses  berikut adalah  keperluan       teras   (core   requirement)    sistem, sebagaimana     digariskan      oleh    pihak   PLTT    Bintulu.        Setiap  langkah
+   268→dipetakan       kepada  modul   fungsian        dalam   Bahagian        8.
+   269→1
+   270→Permohonan      Masuk   oleh    Pelawat
+   271→        –       Pelawat mengisi borang  dalam   talian: nama,   no.     IC/pasport,     no.     telefon,        syarikat,       tujuan  urusan, staf/jabatan
+   272→yang    hendak  ditemui,        dan     tarikh/masa     kedatangan.
+   273→2
+   274→Muat    Naik    Bukti   Pengenalan      Diri
+   275→        –       Pelawat wajib   melampirkan     imej/scan       MyKad   atau    Pasport sebagai sebahagian      borang  permohonan      sebelum ia
+   276→boleh   dihantar        untuk   semakan.
+   277→3
+   278→Kemasukan       oleh    Pengawal        Keselamatan     (Alternatif)
+   279→        –       Bagi    pelawat yang    tidak   menggunakan     peranti sendiri,        Pengawal        Keselamatan     boleh
+   280→memasukkan      maklumat        pelawat secara  manual  di      kaunter (walk-in        registration).
+   281→4
+   282→Semakan &       Kelulusan       oleh    Pengawal        Keselamatan
+   283→        –       Pengawal        menyemak        maklumat        &       bukti   pengenalan      pelawat,        kemudian        meluluskan      atau
+   284→menolak permohonan.     Status  bertukar        kepada  
+   285→Diluluskan      (Checked-In)
+   286→.
+   287→5
+   288→Urusan  Bersama Staf
+   289→        –       Pelawat yang    telah   diluluskan      masuk   premis  dan     berjumpa        staf    berkenaan       untuk   melaksanakan    tujuan  lawatan.
+   290→6
+   291→Pengesahan      Staf
+   292→        –       Staf    mengesahkan     (verify)        urusan  telah   selesai dalam   sistem  dan     membuat catatan ringkas berkaitan       urusan  tersebut.
+   293→7
+   294→Semakan Status  Verifikasi      oleh    Pengawal        Keselamatan
+   295→        –       Pengawal        menyemak        dalam   sistem  sama    ada     staf    telah   mengesahkan     urusan  selesai.
+   296→8
+   297→Borang  Maklum  Balas   Pelawat
+   298→        –       Sebelum keluar, pelawat diminta mengisi borang  maklum  balas   ringkas (penilaian      bintang +       komen)  mengenai
+   299→pengalaman      lawatan.
+   300→9
+   301→Pengesahan      Semula  oleh    Pengawal        Keselamatan     (Staf)
+   302→        –       Pengawal        mengesahkan     rekod   menunjukkan     staf    telah   membuat pengesahan      urusan
+   303→(semakan        kawalan kedua/double-check).
+   304→10
+   305→Pengesahan      Maklum  Balas   oleh    Pengawal        Keselamatan
+   306→        –       Pengawal        menyemak        pelawat telah   melengkapkan    borang  maklum  balas   sebelum
+   307→keluar  dibenarkan.
+   308→11
+   309→Kelulusan       Keluar
+   310→        –       Pengawal        Keselamatan     membenarkan     pelawat keluar  premis  dan     membuat catatan akhir   (masa   keluar, nota    tambahan).      Rekod
+   311→lawatan ditutup (Checked-Out).
+   312→Nota    Reka    Bentuk:
+   313→        Langkah 7,      9       dan     10      adalah  pusat   kawalan (control        gates)  Pengawal        Keselamatan     sebelum kelulusan       keluar  dibenarkan      –       sistem
+   314→tidak   membenarkan
+   315→        butang  "Benarkan       Keluar" aktif   sehingga        kedua-dua       syarat  (Staf   Sah     +       Maklum  Balas   Lengkap)        dipenuhi.       Ini     dikuatkuasakan  di
+   316→peringkat       UI      
+   317→dan
+   318→        di      peringkat       pangkalan       data    (RLS/trigger)   –       lihat   Bahagian        7       &       13.
+   319→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   320→Halaman 06
+   321→
+   322→===== PAGE 7 =====
+   323→Peta    Aliran  Mengikut        Peranan (Swimlane       Overview)
+   324→PELAWAT
+   325→PENGAWAL
+   326→KESELAMATAN
+   327→STAF    JTM
+   328→STATUS  SISTEM  (VISIT_STATUS)
+   329→Isi     borang  +       muat    naik    ID
+   330→(Langkah        1–2)
+   331→—       
+   332→(atau   daftar  walk-in,
+   333→Langkah 3)
+   334→—
+   335→pending_approval
+   336→Menunggu        kelulusan
+   337→Semak   &       lulus   
+   338→(Langkah        4)
+   339→—
+   340→approved
+   341→        
+   342→→
+   343→        
+   344→checked_in
+   345→Berjumpa        staf,   jalankan
+   346→urusan  
+   347→(Langkah        5)
+   348→Pantau  dashboard
+   349→Layan   pelawat
+   350→in_progress
+   351→—
+   352→—
+   353→Sahkan  urusan  selesai +
+   354→catatan 
+   355→(Langkah        6)
+   356→staff_verified
+   357→—
+   358→Semak   status  verifikasi      staf
+   359→(Langkah        7)
+   360→—
+   361→pending_feedback
+   362→Isi     borang  maklum  balas
+   363→(Langkah        8)
+   364→—
+   365→—
+   366→feedback_submitted
+   367→—
+   368→Sahkan  staf    telah   verify
+   369→(Langkah        9)
+   370→        &       sahkan
+   371→maklum  balas   lengkap
+   372→(Langkah        10)
+   373→—
+   374→ready_for_exit
+   375→Keluar  premis
+   376→Benarkan        keluar  +       catatan
+   377→(Langkah        11)
+   378→—
+   379→checked_out
+   380→Laluan  Alternatif      (Exception      Paths)
+   381→SENARIO
+   382→TINDAKAN        SISTEM
+   383→Permohonan      ditolak oleh    Pengawal
+   384→(Langkah        4)
+   385→Status  →       
+   386→rejected
+   387→;       pelawat menerima        notifikasi      sebab   penolakan;      rekod   disimpan        untuk   audit.
+   388→Staf    tidak   mengesahkan     dalam   tempoh  SLA
+   389→(cth.   2       jam)
+   390→Notifikasi      peringatan      auto    dihantar        kepada  staf    &       makluman        "overstay"      dipaparkan      pada    dashboard
+   391→Pengawal.
+   392→Pelawat cuba    keluar  sebelum syarat
+   393→dipenuhi
+   394→Butang  "Benarkan       Keluar" dinyahaktifkan  (disabled)      di      UI      Pengawal        +       disekat oleh    dasar   RLS/trigger     pada
+   395→pangkalan       data.
+   396→Pelawat tidak   mengisi maklum  balas
+   397→Pengawal        boleh   "override"      dengan  kebenaran       &       sebab   wajib   direkodkan      (audit  log),   tertakluk       kepada  polisi
+   398→organisasi.
+   399→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   400→Halaman 07
+   401→
+   402→===== PAGE 8 =====
+   403→7.
+   404→Visit   Status  State   Machine
+   405→Setiap  rekod   lawatan (
+   406→visits
+   407→)       mempunyai       satu    medan   
+   408→status
+   409→        yang    mengawal        keseluruhan     aliran  kerja.  Jadual  berikut mentakrifkan
+   410→setiap  keadaan (state),        pencetus        peralihan       (trigger),      dan     peranan yang    dibenarkan      mengubahnya.
+   411→STATUS  (ENUM)
+   412→PENERANGAN
+   413→DICETUSKAN      OLEH
+   414→PERALIHAN       SETERUSNYA
+   415→pending_approval
+   416→Permohonan      dihantar,       menunggu        semakan
+   417→keselamatan
+   418→Pelawat /       Pengawal        (walk-
+   419→in)
+   420→approved        ·       rejected
+   421→approved
+   422→Diluluskan      oleh    Pengawal        Keselamatan
+   423→Pengawal        Keselamatan
+   424→checked_in
+   425→rejected
+   426→Permohonan      ditolak (status akhir)
+   427→Pengawal        Keselamatan
+   428→—       (final)
+   429→checked_in
+   430→Pelawat telah   masuk   premis
+   431→Pengawal        Keselamatan
+   432→in_progress
+   433→in_progress
+   434→Urusan  sedang  dijalankan      bersama staf
+   435→Sistem  (auto   selepas check-
+   436→in)
+   437→staff_verified
+   438→staff_verified
+   439→Staf    telah   sahkan  urusan  selesai +       catatan
+   440→Staf    JTM
+   441→pending_feedback
+   442→pending_feedback
+   443→Menunggu        pelawat isi     borang  maklum  balas
+   444→Sistem  (auto)
+   445→feedback_submitted
+   446→feedback_submitted
+   447→Maklum  balas   pelawat diterima
+   448→Pelawat
+   449→ready_for_exit
+   450→ready_for_exit
+   451→Kedua   syarat  (verify staf    +       maklum  balas)
+   452→disahkan        Pengawal
+   453→Pengawal        Keselamatan
+   454→checked_out
+   455→checked_out
+   456→Pelawat keluar  premis, catatan akhir
+   457→direkod (status akhir)
+   458→Pengawal        Keselamatan
+   459→—       (final)
+   460→cancelled
+   461→Dibatalkan      oleh    pelawat /       kakitangan
+   462→sebelum kelulusan
+   463→Pelawat /       Admin
+   464→—       (final)
+   465→Kawalan Integriti:
+   466→        Peralihan       
+   467→ready_for_exit  →       checked_out
+   468→        hanya   dibenarkan      jika    
+   469→staff_verified_at       IS      NOT     NULL
+   470→        DAN     
+   471→feedback_submitted_at   IS
+   472→NOT     NULL
+   473→.       Ini     dikuatkuasakan  melalui Postgres        
+   474→CHECK   constraint
+   475→        /       
+   476→trigger function
+   477→        di      Supabase,       bukan   sahaja  logik   frontend,       bagi    mengelakkan     pintasan
+   478→(bypass).
+   479→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   480→Halaman 08
+   481→
+   482→===== PAGE 9 =====
+   483→8.
+   484→Functional      Requirements
+   485→Keutamaan:      
+   486→MUST
+   487→        =       wajib   Fasa    1                       
+   488→SHOULD
+   489→        =       amat    digalakkan                      
+   490→COULD
+   491→        =       pilihan/masa    hadapan
+   492→8.1             Modul   Pelawat (Visitor        Portal)
+   493→ID
+   494→KEPERLUAN
+   495→KEUTAMAAN
+   496→FR-01
+   497→Sistem  membenarkan     pelawat mengakses       borang  permohonan      masuk   melalui pautan  awam    /       QR      code    di
+   498→pintu   masuk   tanpa   perlu   daftar  akaun.
+   499→MUST
+   500→FR-02
+   501→Borang  permohonan      mesti   mengandungi:    nama    penuh,  no.     IC/pasport,     no.     telefon,        e-mel   (opsyenal),
+   502→syarikat/organisasi,    tujuan  urusan, jabatan/staf    yang    ditemui,        tarikh  &       masa    lawatan dijangka.
+   503→MUST
+   504→FR-03
+   505→Pelawat wajib   memuat  naik    sekurang-kurangnya      satu    (1)     bukti   pengenalan      diri    (imej   JPG/PNG atau    PDF,    maks.
+   506→5MB)    sebelum borang  boleh   dihantar.
+   507→MUST
+   508→FR-04
+   509→Sistem  mengesahkan     format  &       saiz    fail    semasa  muat    naik,   dan     memaparkan      pratonton       (preview)       sebelum
+   510→penghantaran    akhir.
+   511→MUST
+   512→FR-05
+   513→Selepas penghantaran,   pelawat menerima        kod     rujukan unik    (visit  reference       code)   dan     boleh   menyemak        status
+   514→permohonan      secara  masa    nyata.
+   515→MUST
+   516→FR-06
+   517→Sistem  menghantar      notifikasi      (SMS/WhatsApp/e-mel)    kepada  pelawat apabila status  permohonan      berubah
+   518→(lulus/ditolak).
+   519→SHOULD
+   520→FR-07
+   521→Pelawat boleh   mengisi borang  maklum  balas   (rating 1–5     bintang +       komen   teks)   selepas staf    mengesahkan
+   522→urusan  selesai.
+   523→MUST
+   524→FR-08
+   525→Borang  tersedia        dwibahasa       (Bahasa Malaysia        /       English)        dengan  suis    bahasa  mudah.
+   526→SHOULD
+   527→8.2             Modul   Pengawal        Keselamatan
+   528→ID
+   529→KEPERLUAN
+   530→KEUTAMAAN
+   531→FR-09
+   532→Pengawal        boleh   log     masuk   selamat (e-mel  +       kata    laluan, Supabase        Auth)   dengan  peranan 
+   533→security
+   534→.
+   535→MUST
+   536→FR-10
+   537→Pengawal        boleh   mendaftar       pelawat secara  manual  (walk-in)       menggunakan     borang  yang    serupa  dengan  portal
+   538→pelawat.
+   539→MUST
+   540→FR-11
+   541→Dashboard       memaparkan      senarai permohonan      
+   542→pending_approval
+   543→        dalam   masa    nyata   (Supabase       Realtime)
+   544→dengan  butang  Lulus   /       Tolak.
+   545→MUST
+   546→FR-12
+   547→Semasa  semakan,        Pengawal        boleh   melihat imej    bukti   pengenalan      diri    yang    dimuat  naik    pelawat secara  bersaiz
+   548→penuh   (zoom).
+   549→MUST
+   550→FR-13
+   551→Pengawal        boleh   menandakan      pelawat sebagai "Checked-In"    sebaik  kelulusan       diberikan,      merekod cap     masa
+   552→masuk   automatik.
+   553→MUST
+   554→FR-14
+   555→Dashboard       memaparkan      senarai pelawat aktif   dalam   premis  (status:        checked_in      /       in_progress)    secara  masa
+   556→nyata.
+   557→MUST
+   558→FR-15
+   559→Pengawal        boleh   menyemak        status  pengesahan      staf    (staff_verified)        bagi    setiap  lawatan aktif   melalui paparan
+   560→senarai/dashboard.
+   561→MUST
+   562→FR-16
+   563→Pengawal        boleh   menyemak        status  pengisian       borang  maklum  balas   pelawat sebelum meluluskan      keluar.
+   564→MUST
+   565→FR-17
+   566→Butang  "Benarkan       Keluar" hanya   aktif   (enabled)       apabila kedua   syarat  (staff_verified DAN     feedback_submitted)
+   567→dipenuhi;       sistem  memaparkan      mesej   jelas   jika    syarat  belum   cukup.
+   568→MUST
+   569→FR-18
+   570→Pengawal        boleh   menambah        catatan bebas   teks    (free-text      notes)  semasa  kelulusan       masuk   dan     kelulusan
+   571→keluar.
+   572→MUST
+   573→FR-19
+   574→Sistem  memaparkan      makluman        visual  (badge  merah/kuning)   bagi    pelawat yang    melebihi        tempoh  dijangka
+   575→dalam   premis  (overstay       alert).
+   576→SHOULD
+   577→FR-20
+   578→Pengawal        boleh   menjana laporan harian/mingguan bilangan        pelawat,        muat    turun   format  Excel/PDF.
+   579→SHOULD
+   580→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   581→Halaman 09
+   582→
+   583→===== PAGE 10 =====
+   584→8.3             Modul   Staf    JTM
+   585→ID
+   586→KEPERLUAN
+   587→KEUTAMAAN
+   588→FR-21
+   589→Staf    boleh   log     masuk   (peranan        
+   590→staff
+   591→)       dan     melihat senarai pelawat yang    menunggu        untuk   berjumpa        dengan
+   592→mereka.
+   593→MUST
+   594→FR-22
+   595→Staf    menerima        notifikasi      (in-app /       e-mel   /       WhatsApp)       apabila pelawat yang    menemui mereka  telah   "Checked-
+   596→In".
+   597→SHOULD
+   598→FR-23
+   599→Staf    boleh   menekan butang  "Sahkan Urusan  Selesai"        dan     diwajibkan      mengisi medan   catatan (mandatory
+   600→remarks)        sebelum penghantaran.
+   601→MUST
+   602→FR-24
+   603→Sistem  merekod cap     masa    dan     ID      staf    yang    membuat pengesahan      (audit  trail).
+   604→MUST
+   605→FR-25
+   606→Staf    boleh   melihat sejarah lawatan yang    berkaitan       dengan  diri    mereka  (log    lawatan lepas).
+   607→COULD
+   608→FR-26
+   609→Staf    boleh   mengesahkan     urusan  melalui pautan  pantas  (magic  link)   pada    telefon tanpa   perlu   log     masuk
+   610→penuh,  untuk   kemudahan.
+   611→COULD
+   612→8.4             Modul   Admin   /       Pentadbiran
+   613→ID
+   614→KEPERLUAN
+   615→KEUTAMAAN
+   616→FR-27
+   617→Admin   boleh   mengurus        akaun   pengguna        (Pengawal,      Staf,   Admin   lain)   –       cipta,  kemas   kini,   nyahaktif.
+   618→MUST
+   619→FR-28
+   620→Admin   boleh   mengurus        senarai jabatan &       direktori       staf    JTM.
+   621→MUST
+   622→FR-29
+   623→Admin   boleh   melihat dashboard       analitik:       jumlah  pelawat mengikut        hari/minggu/bulan,      purata  masa
+   624→pemprosesan,    skor    kepuasan        purata.
+   625→MUST
+   626→FR-30
+   627→Admin   boleh   mengakses       log     audit   penuh   (siapa, bila,   tindakan        apa)    dan     menapis mengikut
+   628→tarikh/pengguna/rekod.
+   629→MUST
+   630→FR-31
+   631→Admin   boleh   mengeksport     data    pelawat &       lawatan (CSV/Excel)     bagi    tujuan  pematuhan       &       pelaporan       pihak
+   632→pengurusan.
+   633→SHOULD
+   634→FR-32
+   635→Admin   boleh   menetapkan      tempoh  simpanan        data    (data   retention)      selaras dengan  Akta    Perlindungan    Data
+   636→Peribadi        2010    (PDPA).
+   637→SHOULD
+   638→8.5             Keperluan       Merentas        Modul   (Cross-Cutting)
+   639→ID
+   640→KEPERLUAN
+   641→KEUTAMAAN
+   642→FR-33
+   643→Setiap  tindakan        status  (approve,       reject, verify, feedback,       exit)   dicatat dalam   jadual  
+   644→audit_logs
+   645→        dengan  cap
+   646→masa    &       ID      pelaku.
+   647→MUST
+   648→FR-34
+   649→Sistem  menghasilkan    kod     rujukan/QR      unik    bagi    setiap  lawatan untuk   pengesanan      pantas.
+   650→SHOULD
+   651→FR-35
+   652→Sistem  responsif       –       berfungsi       baik    pada    skrin   kiosk/tablet    kaunter keselamatan     dan     telefon pintar  pelawat.
+   653→MUST
+   654→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   655→Halaman 10
+   656→
+   657→===== PAGE 11 =====
+   658→8.6             Contoh  User    Stories (untuk  rujukan prompting       Z.ai)
+   659→US-01
+   660→"Sebagai        seorang 
+   661→pelawat
+   662→,       saya    mahu    mengisi borang  permohonan      masuk   dan     memuat  naik    MyKad   saya    dari    telefon,        supaya  saya    tidak   perlu   menulis
+   663→maklumat        berulang        kali    di      kaunter."
+   664→US-02
+   665→"Sebagai        
+   666→Pengawal        Keselamatan
+   667→,       saya    mahu    melihat semua   permohonan      menunggu        kelulusan       dalam   satu    skrin   masa    nyata,  supaya  saya    boleh
+   668→meluluskan      atau    menolak dengan  pantas  tanpa   perlu   refresh manual."
+   669→US-03
+   670→"Sebagai        
+   671→Staf    JTM
+   672→,       saya    mahu    menerima        makluman        apabila pelawat saya    tiba    dan     mengesahkan     urusan  selesai dengan  satu    ketikan berserta        catatan
+   673→ringkas,        supaya  rekod   urusan  lengkap tanpa   membebankan     tugas   harian  saya."
+   674→US-04
+   675→"Sebagai        
+   676→Pengawal        Keselamatan
+   677→,       saya    tidak   mahu    dapat   membenarkan     pelawat keluar  sehingga        staf    mengesahkan     urusan  selesai DAN     pelawat
+   678→mengisi borang  maklum  balas,  supaya  proses  keluar  sentiasa        mematuhi        prosedur        keselamatan."
+   679→US-05
+   680→"Sebagai        
+   681→Admin
+   682→,       saya    mahu    melihat dashboard       analitik        bilangan        pelawat &       skor    kepuasan        setiap  bulan,  supaya  saya    boleh   melaporkan      prestasi
+   683→perkhidmatan    kepada  pengurusan      atasan."
+   684→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   685→Halaman 11
+   686→
+   687→===== PAGE 12 =====
+   688→9.
+   689→Non-Functional  Requirements
+   690→KATEGORI
+   691→KEPERLUAN
+   692→Prestasi
+   693→Masa    muat    halaman <       2       saat    pada    rangkaian       4G;     carian/senarai  pelawat aktif   memuatkan       <       1       saat    menggunakan     indeks
+   694→pangkalan       data    yang    sesuai.
+   695→Kebolehskalaan
+   696→Reka    bentuk  mesti   menampung       sekurang-kurangnya      500     lawatan/hari    dan     boleh   berskala        mengikut        pelan   Supabase
+   697→(connection     pooling /       read    replicas        jika    perlu).
+   698→Keselamatan
+   699→Semua   trafik  melalui HTTPS   (dikuatkuasakan oleh    Netlify);       kebenaran       akses   dikawal Row     Level   Security        (RLS)   Supabase
+   700→mengikut        peranan;        fail    bukti   pengenalan      disimpan        dalam   bucket  storan  peribadi        (private        bucket) dengan  signed  URL
+   701→sahaja.
+   702→Pematuhan       Data
+   703→Peribadi
+   704→Selaras dengan  Akta    Perlindungan    Data    Peribadi        2010    (PDPA)  –       kebenaran       (consent)       eksplisit       diperoleh       semasa
+   705→pendaftaran;    dasar   pengekalan      &       pemusnahan      data    ditetapkan      oleh    Admin.
+   706→Kebolehcapaian
+   707→(Accessibility)
+   708→Mematuhi        WCAG    2.1     AA      –       termasuk        kontras teks    mencukupi       di      atas    latar   kaca    lut     sinar   (glassmorphism),        sokongan        navigasi
+   709→papan   kekunci &       pembaca skrin.
+   710→Kebolehpercayaan
+   711→Sasaran ketersediaan    sistem  (uptime)        99.5%   bulanan (bergantung     SLA     Netlify &       Supabase);      sandaran        (backup)        pangkalan
+   712→data    automatik       harian.
+   713→Kebolehselenggaraan
+   714→Kod     frontend        berasaskan      komponen        (component-based)       yang    dijana  &       dikemas kini    melalui Z.ai    (GLM-5.2);      skema
+   715→pangkalan       data    diurus  melalui migration       files   Supabase        CLI     untuk   kawalan versi.
+   716→Kesesuaian      Peranti
+   717→Reka    bentuk  responsif       (mobile-first   untuk   borang  pelawat;        layout  kaunter/tablet  untuk   Pengawal        &       Staf).
+   718→Kebolehjejakan
+   719→(Auditability)
+   720→Semua   peralihan       status  disimpan        kekal   (immutable)     dalam   audit_logs;     tiada   padam   sebenar (hard   delete) rekod   lawatan –
+   721→guna    soft-delete/arkib.
+   722→Penyetempatan
+   723→(Localization)
+   724→Antara  muka    menyokong       Bahasa  Malaysia        sebagai bahasa  utama   dan     Bahasa  Inggeris        sebagai pilihan kedua.
+   725→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   726→Halaman 13
+   727→
+   728→===== PAGE 13 =====
+   729→10.
+   730→System  Architecture
+   731→Sistem  menggunakan     seni    bina    
+   732→JAMstack
+   733→        –       frontend        statik/SPA      dihoskan        di      Netlify,        berkomunikasi   terus   dengan  Supabase        melalui API
+   734→selamat (PostgREST      +       Supabase        JS      Client),        tanpa   memerlukan      pelayan backend tersendiri      (serverless).
+   735→GAMBARAN        ALIRAN  DATA    (HIGH-LEVEL)
+   736→Pelawat /       Pengawal        /       Staf    /       Admin   (Browser)
+   737→        
+   738→→       
+   739→Netlify CDN
+   740→        (menyampaikan   aplikasi        web     statik/SPA      yang    dibina  dengan  bantuan Z.ai    GLM‑5.2)        
+   741→→
+   742→Supabase        Client  SDK
+   743→        (auth   token,  panggilan       API)    
+   744→→       
+   745→Supabase        Platform
+   746→:
+   747→Supabase        Auth
+   748→        –       pengesahan      pengguna        (Pengawal/Staf/Admin)   &       pengurusan      sesi    (JWT)
+   749→PostgreSQL      Database
+   750→        –       jadual  data    teras   (visitors,      visits, staff,  feedback,       audit_logs,     dsb.)
+   751→Row     Level   Security        (RLS)
+   752→        –       kawalan akses   data    mengikut        peranan pada    setiap  query
+   753→Supabase        Storage
+   754→        –       bucket  peribadi        untuk   imej    bukti   pengenalan      diri    &       foto    pelawat
+   755→Realtime        (WebSocket)
+   756→        –       kemas   kini    dashboard       Pengawal        secara  langsung        apabila status  berubah
+   757→Edge    Functions
+   758→        –       logik   peringkat       pelayan (cth.   hantar  notifikasi      SMS/WhatsApp/e-mel,     jana    QR      code,   validasi        peralihan       status)
+   759→LAPISAN SISTEM
+   760→LAPISAN
+   761→KOMPONEN
+   762→Presentation
+   763→Web     App     (React/Vite     atau    setara) –       reka    bentuk  glassmorphism,  responsif,      dijana  &       diselenggara    dengan  bantuan Z.ai
+   764→(GLM-5.2)
+   765→Hosting /       CDN
+   766→Netlify –       Continuous      Deployment      dari    Git     repository,     Netlify Forms/Functions (opsyenal)      untuk   keperluan       tambahan
+   767→API     /       Data    Access
+   768→Supabase        Auto-generated  REST    API     (PostgREST)     +       Supabase        JS      SDK
+   769→Business        Logic
+   770→Supabase        Edge    Functions       (Deno)  –       validasi        state   machine,        notifikasi,     penjanaan       QR/kod  rujukan
+   771→Data
+   772→Supabase        PostgreSQL      –       jadual  berskema        relational      +       RLS     Policies
+   773→Storan  Fail
+   774→Supabase        Storage –       bucket  
+   775→id-documents
+   776→        (private)       &       
+   777→visitor-photos
+   778→Notifikasi
+   779→Edge    Function        +       pembekal        pihak   ketiga  (cth.   Twilio/WhatsApp Business        API/Resend      e-mel)  –       Fasa    2
+   780→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   781→Halaman 14
+   782→
+   783→===== PAGE 14 =====
+   784→11.
+   785→Technology      Stack
+   786→LAPISAN
+   787→TEKNOLOGI       DICADANGKAN
+   788→SEBAB   PEMILIHAN
+   789→AI      Development     Partner
+   790→Z.ai    –       Model   GLM‑5.2
+   791→Menjana &       menyelenggara   kod     frontend/komponen,      konfigurasi
+   792→Supabase,       dan     skrip   migrasi secara  pantas  melalui prompt
+   793→engineering.
+   794→Frontend        Framework
+   795→React   18      +       Vite    (atau   Next.js static  export)
+   796→Ekosistem       matang, prestasi        build   pantas, serasi  penuh   dengan
+   797→Netlify &       Supabase        JS      SDK.
+   798→Styling
+   799→Tailwind        CSS     +       custom  CSS     untuk   kesan
+   800→glassmorphism   (backdrop-filter,       gradient)
+   801→Membolehkan     iterasi UI      pantas  &       konsisten       dengan  design  token
+   802→(lihat  Bahagian        14).
+   803→State   Management
+   804→React   Query   /       TanStack        Query   +       Context
+   805→API
+   806→Menguruskan     cache   data    Supabase        &       sinkronisasi    realtime
+   807→dengan  cekap.
+   808→Backend /       Database
+   809→Supabase        (PostgreSQL     15+)
+   810→Backend-as-a-Service    lengkap:        Auth,   DB,     Storage,        Realtime        &
+   811→Edge    Functions       dalam   satu    platform,       mengurangkan    overhead
+   812→DevOps.
+   813→Authentication
+   814→Supabase        Auth    (Email/Password +       Magic
+   815→Link)
+   816→Pengurusan      sesi    selamat terbina-dalam,  sokongan        Row     Level
+   817→Security        berasaskan      JWT     claims/roles.
+   818→File    Storage
+   819→Supabase        Storage
+   820→Storan  selamat untuk   bukti   pengenalan      diri    dengan  kawalan
+   821→akses   peribadi        (signed URLs).
+   822→Hosting /       Deployment
+   823→Netlify (Continuous     Deployment      dari
+   824→GitHub/GitLab)
+   825→Deploy  automatik,      preview deployment      per     Pull    Request,        CDN
+   826→global, HTTPS   percuma.
+   827→Version Control
+   828→Git     +       GitHub/GitLab
+   829→Kawalan versi   kod     &       migrasi skema   pangkalan       data    (Supabase       CLI
+   830→migrations).
+   831→Notifikasi      (Fasa   2)
+   832→Supabase        Edge    Function        +       Twilio/WhatsApp
+   833→Cloud   API/Resend
+   834→Notifikasi      masa    nyata   kepada  pelawat &       staf    tanpa   pelayan
+   835→tambahan.
+   836→QR      Code
+   837→Library 
+   838→qrcode.react
+   839→        /       Edge    Function
+   840→generator
+   841→Penjanaan       kod     rujukan visual  untuk   pengesanan      pantas  pelawat.
+   842→Nota    mengenai        Z.ai    (GLM‑5.2):
+   843→        Model   ini     digunakan       terutamanya     sebagai 
+   844→AI      coding  assistant
+   845→        semasa  fasa    pembangunan     –       menjana komponen        UI
+   846→glassmorphism,  fungsi  Supabase        client, dan     skrip   seed    data    –       berpandukan     spesifikasi     dalam   dokumen ini.    Ia      bukan   komponen        masa-jalan      (runtime)
+   847→sistem  produksi,       melainkan       pasukan projek  memutuskan      untuk   menambah        ciri    AI      pembantu        maya    (contoh:        chatbot bantuan pelawat)        pada    fasa    akan
+   848→datang  –       lihat   Bahagian        16.
+   849→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   850→Halaman 15
+   851→
+   852→===== PAGE 15 =====
+   853→12.
+   854→Supabase        Database        Design
+   855→Skema   berikut adalah  cadangan        struktur        jadual  PostgreSQL      bagi    Supabase.       Semua   jadual  menggunakan     
+   856→uuid
+   857→        sebagai primary key
+   858→(
+   859→gen_random_uuid()
+   860→)       dan     medan   
+   861→created_at
+   862→/
+   863→updated_at
+   864→        berjenis        
+   865→timestamptz
+   866→.
+   867→12.1            
+   868→profiles
+   869→        –       Pengguna        Sistem  (Pengawal       /       Staf    /       Admin)
+   870→MEDAN
+   871→JENIS
+   872→PENERANGAN
+   873→id
+   874→uuid,   PK
+   875→Rujuk   
+   876→auth.users.id
+   877→        (Supabase       Auth)
+   878→full_name
+   879→text
+   880→Nama    penuh   pengguna
+   881→role
+   882→text    (enum)
+   883→security
+   884→        ·       
+   885→staff
+   886→        ·       
+   887→admin
+   888→department
+   889→text
+   890→Jabatan (untuk  staf)
+   891→phone
+   892→text
+   893→No.     telefon untuk   notifikasi
+   894→is_active
+   895→boolean
+   896→Status  aktif   akaun
+   897→created_at
+   898→timestamptz
+   899→Tarikh  akaun   dicipta
+   900→12.2            
+   901→visitors
+   902→        –       Maklumat        Pelawat
+   903→MEDAN
+   904→JENIS
+   905→PENERANGAN
+   906→id
+   907→uuid,   PK
+   908→Pengecam        unik    pelawat
+   909→full_name
+   910→text
+   911→Nama    penuh   sepertimana     pada    kad     pengenalan
+   912→ic_passport_no
+   913→text
+   914→No.     MyKad   /       Pasport (unique,        disulitkan/masked       pada    UI)
+   915→phone
+   916→text
+   917→No.     telefon pelawat
+   918→email
+   919→text
+   920→E-mel   pelawat (opsyenal)
+   921→company
+   922→text
+   923→Syarikat        /       organisasi      pelawat
+   924→photo_url
+   925→text
+   926→Signed  URL     foto    pelawat (opsyenal,      kiosk   capture)
+   927→created_at
+   928→timestamptz
+   929→Rekod   pelawat pertama kali    dicipta
+   930→12.3            
+   931→visits
+   932→        –       Rekod   Lawatan (Jadual Teras)
+   933→MEDAN
+   934→JENIS
+   935→PENERANGAN
+   936→id
+   937→uuid,   PK
+   938→Pengecam        unik    lawatan
+   939→reference_code
+   940→text,   unique
+   941→Kod     rujukan pendek  (cth.   
+   942→VMS-20260714-0042
+   943→)
+   944→visitor_id
+   945→uuid,   FK
+   946→Rujuk   
+   947→visitors.id
+   948→purpose
+   949→text
+   950→Tujuan  urusan  lawatan
+   951→host_staff_id
+   952→uuid,   FK
+   953→Rujuk   
+   954→profiles.id
+   955→        (staf   yang    ditemui)
+   956→registered_by
+   957→uuid,   FK      nullable
+   958→Pengawal        yang    daftar  bagi    pihak   pelawat (jika   walk-in);       null    jika    self-service
+   959→status
+   960→text    (enum)
+   961→Lihat   Bahagian        7       –       State   Machine
+   962→approved_by
+   963→uuid,   FK      nullable
+   964→Pengawal        yang    meluluskan
+   965→approved_at
+   966→timestamptz
+   967→Cap     masa    kelulusan
+   968→checked_in_at
+   969→timestamptz
+   970→Cap     masa    masuk   premis
+   971→staff_verified_at
+   972→timestamptz
+   973→Cap     masa    staf    sahkan  urusan  selesai
+   974→staff_remarks
+   975→text
+   976→Catatan staf    semasa  pengesahan
+   977→feedback_submitted_at
+   978→timestamptz
+   979→Cap     masa    maklum  balas   dihantar
+   980→exit_confirmed_by
+   981→uuid,   FK      nullable
+   982→Pengawal        yang    membenarkan     keluar
+   983→exit_notes
+   984→text
+   985→Catatan Pengawal        semasa  keluar
+   986→
+   987→===== PAGE 16 =====
+   988→checked_out_at
+   989→timestamptz
+   990→Cap     masa    keluar  premis
+   991→rejection_reason
+   992→text
+   993→Sebab   penolakan       (jika   berkenaan)
+   994→created_at      /       updated_at
+   995→timestamptz
+   996→Metadata        rekod
+   997→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+   998→Halaman 16
+   999→
+  1000→===== PAGE 17 =====
+  1001→12.4            Jadual  Sokongan        Lain
+  1002→JADUAL
+  1003→MEDAN   UTAMA   &       TUJUAN
+  1004→visitor_documents
+  1005→id,     visitor_id      (FK),   visit_id        (FK),   doc_type,       file_path,      uploaded_at
+  1006→        –       menyimpan       rujukan fail    bukti   pengenalan      diri
+  1007→di      Supabase        Storage (bucket peribadi        
+  1008→id-documents
+  1009→).
+  1010→feedback
+  1011→id,     visit_id        (FK),   rating  (1-5),  comments,       submitted_at
+  1012→        –       borang  maklum  balas   pelawat (Langkah        8).
+  1013→audit_logs
+  1014→id,     actor_id,       actor_role,     action, visit_id        (FK),   details (jsonb),        created_at
+  1015→        –       log     setiap  tindakan        status  untuk
+  1016→audit   &       siasatan.
+  1017→notifications
+  1018→id,     recipient_type, recipient_id,   visit_id        (FK),   channel,        message,        is_read,        sent_at
+  1019→        –       rekod   notifikasi      dihantar
+  1020→(SMS/e-mel/in-app).
+  1021→departments
+  1022→id,     name,   description
+  1023→        –       senarai jabatan JTM/PLTT        untuk   dropdown        borang.
+  1024→blacklist
+  1025→id,     ic_passport_no, reason, added_by        (FK),   added_at
+  1026→        –       
+  1027→(cadangan       Fasa    2)
+  1028→        senarai pelawat disekat.
+  1029→system_settings
+  1030→id,     key,    value   (jsonb)
+  1031→        –       tetapan konfigurasi     (cth.   tempoh  SLA     verifikasi      staf,   tempoh  pengekalan      data).
+  1032→12.5            Data    Contoh  (Dummy  /       Seed    Data)
+  1033→Bagi    tujuan  demonstrasi     &       ujian   di      persekitaran    pembangunan     Supabase,       skrip   
+  1034→seed.sql
+  1035→        perlu   dijana  merangkumi:
+  1036→SET     DATA
+  1037→KANDUNGAN       CADANGAN
+  1038→Pengguna        (profiles)
+  1039→3       Pengawal        Keselamatan,    5       Staf    merentasi       jabatan berbeza (Pentadbiran,   Kewangan,       Latihan Teknikal,       HR,     ICT),   1
+  1040→Admin   –       lengkap dengan  e-mel   &       peranan.
+  1041→Jabatan (departments)
+  1042→Pentadbiran,    Kewangan,       Bahagian        Latihan Teknikal,       Sumber  Manusia,        Unit    ICT,    Unit    Keselamatan.
+  1043→Pelawat (visitors)
+  1044→15–20   rekod   pelawat contoh  dengan  nama,   no.     IC      placeholder,    syarikat        pelbagai        (kontraktor,    vendor, pelajar,
+  1045→agensi  kerajaan        lain).
+  1046→Lawatan (visits)
+  1047→20–30   rekod   merentasi       semua   status  (pending_approval,      approved,       checked_in,     staff_verified,
+  1048→feedback_submitted,     checked_out,    rejected)       untuk   menguji setiap  peringkat       UI.
+  1049→Maklum  balas   (feedback)
+  1050→10–15   rekod   dengan  rating  pelbagai        (1–5    bintang)        &       komen   contoh  untuk   uji     dashboard       analitik.
+  1051→Log     audit   (audit_logs)
+  1052→Rekod   auto-generate   bagi    setiap  perubahan       status  dalam   data    lawatan contoh  di      atas.
+  1053→Arahan  Pelaksanaan:
+  1054→        Skrip   seed    data    perlu   dimasukkan      sebagai fail    berasingan      
+  1055→supabase/seed.sql
+  1056→        dan     dijalankan      selepas migrasi skema   (
+  1057→supabase
+  1058→db      reset
+  1059→        di      persekitaran    pembangunan     sahaja).        Data    sebenar pelawat (PII)   TIDAK   PERNAH  dimasukkan      ke      dalam   skrip   seed    –       gunakan nama    &       no.     IC
+  1060→rekaan  (fiktif)        semata-mata.
+  1061→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1062→Halaman 17
+  1063→
+  1064→===== PAGE 18 =====
+  1065→12.6            Hubungan        Entiti  (Entity Relationship    Overview)
+  1066→RINGKASAN       PERHUBUNGAN
+  1067→profiles
+  1068→        (1)     —<      (banyak)        
+  1069→visits
+  1070→                
+  1071→melalui host_staff_id,  approved_by,    exit_confirmed_by,      registered_by
+  1072→visitors
+  1073→        (1)     —<      (banyak)        
+  1074→visits
+  1075→                
+  1076→seorang pelawat boleh   mempunyai       berbilang       rekod   lawatan sepanjang       masa
+  1077→visits
+  1078→        (1)     —<      (banyak)        
+  1079→visitor_documents
+  1080→visits
+  1081→        (1)     ——      (1)     
+  1082→feedback
+  1083→visits
+  1084→        (1)     —<      (banyak)        
+  1085→audit_logs
+  1086→visits
+  1087→        (1)     —<      (banyak)        
+  1088→notifications
+  1089→departments
+  1090→        (1)     —<      (banyak)        
+  1091→profiles
+  1092→                
+  1093→(staf   tergolong       dalam   satu    jabatan)
+  1094→12.7            Indeks  &       Prestasi        Pangkalan       Data
+  1095→INDEKS  DICADANGKAN
+  1096→SEBAB
+  1097→visits(status)
+  1098→Pertanyaan      dashboard       Pengawal        menapis mengikut        status  secara  kerap.
+  1099→visits(host_staff_id,   status)
+  1100→Staf    menyemak        senarai pelawat yang    menunggu        pengesahan      mereka.
+  1101→visits(reference_code)
+  1102→Carian  pantas  semasa  pelawat memberikan      kod     rujukan di      kaunter.
+  1103→visitors(ic_passport_no)
+  1104→Semakan pantas  rekod   pelawat sedia   ada     /       senarai hitam.
+  1105→audit_logs(visit_id,    created_at)
+  1106→Penjejakan      kronologi       tindakan        bagi    satu    lawatan untuk   audit.
+  1107→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1108→Halaman 18–19
+  1109→
+  1110→===== PAGE 19 =====
+  1111→13.
+  1112→Security,       RLS     Policies        &       Compliance
+  1113→13.1            Model   Peranan (Role-Based     Access  Control)
+  1114→PERANAN
+  1115→DASAR   RLS     RINGKAS
+  1116→anon    (pelawat)
+  1117→Boleh   
+  1118→INSERT
+  1119→        ke      
+  1120→visitors
+  1121→,       
+  1122→visits
+  1123→,       
+  1124→visitor_documents
+  1125→,       
+  1126→feedback
+  1127→        sahaja; boleh   
+  1128→SELECT
+  1129→        rekod   lawatan sendiri
+  1130→menggunakan     
+  1131→reference_code
+  1132→        +       token   semakan;        tiada   akses   UPDATE/DELETE   terus.
+  1133→security
+  1134→SELECT/UPDATE
+  1135→        penuh   ke      atas    
+  1136→visits
+  1137→        (kelulusan,     check-in,       exit);  
+  1138→SELECT
+  1139→        ke      
+  1140→visitors
+  1141→,       
+  1142→visitor_documents
+  1143→,       
+  1144→feedback
+  1145→;       tiada
+  1146→akses   
+  1147→DELETE
+  1148→.
+  1149→staff
+  1150→SELECT
+  1151→        lawatan di      mana    
+  1152→host_staff_id   =       auth.uid()
+  1153→        sahaja; 
+  1154→UPDATE
+  1155→        terhad  kepada  medan   
+  1156→staff_verified_at
+  1157→        &
+  1158→staff_remarks
+  1159→        bagi    rekod   sendiri.
+  1160→admin
+  1161→Akses   penuh   (SELECT/INSERT/UPDATE)  ke      semua   jadual  melalui dasar   
+  1162→is_admin()
+  1163→        helper  function;       
+  1164→DELETE
+  1165→        disekat –       guna    soft-
+  1166→delete.
+  1167→13.2            Contoh  Dasar   RLS     (Pseudocode     SQL)
+  1168→--      Pengawal        sahaja  boleh   mengemas        kini    status  lawatan
+  1169→CREATE  POLICY  "security_update_visits"        ON      visits  FOR     UPDATE
+  1170→                USING   (auth.jwt()     ->>     'role'  =       'security')
+  1171→                WITH    CHECK   (auth.jwt()     ->>     'role'  =       'security');
+  1172→--      Staf    hanya   boleh   lihat   lawatan di      mana    mereka  host
+  1173→CREATE  POLICY  "staff_select_own_visits"       ON      visits  FOR     SELECT
+  1174→                USING   (host_staff_id  =       auth.uid());
+  1175→--      Sekat   peralihan       ke      checked_out     tanpa   syarat  dipenuhi        (trigger        function)
+  1176→CREATE  FUNCTION        enforce_exit_conditions()       RETURNS trigger AS      $$
+  1177→BEGIN
+  1178→                IF      NEW.status      =       'checked_out'   AND
+  1179→                                (OLD.staff_verified_at  IS      NULL    OR      OLD.feedback_submitted_at       IS      NULL)   THEN
+  1180→                                RAISE   EXCEPTION       'Syarat keluar  belum   dipenuhi';
+  1181→                END     IF;
+  1182→                RETURN  NEW;
+  1183→END;    $$      LANGUAGE        plpgsql;
+  1184→13.3            Pematuhan       PDPA    (Akta   Perlindungan    Data    Peribadi        2010)
+  1185→Notis   Perlindungan    Data    Peribadi        dipaparkan      &       kebenaran       (consent)       wajib   ditanda semasa  borang  pelawat dihantar.
+  1186→Bukti   pengenalan      diri    disimpan        dalam   bucket  
+  1187→peribadi
+  1188→        Supabase        Storage –       TIDAK   PERNAH  awam    (public);       akses   hanya   melalui
+  1189→signed  URL     bertempoh       pendek  (cth.   5       minit).
+  1190→Dasar   pengekalan      data    (data   retention       policy) ditetapkan      oleh    Admin   (cth.   arkib/anonymize selepas 12      bulan).
+  1191→Log     audit   merekodkan      sesiapa yang    mengakses/melihat       dokumen pengenalan      diri    pelawat.
+  1192→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1193→Halaman 20
+  1194→
+  1195→===== PAGE 20 =====
+  1196→14.
+  1197→UI/UX   Design  Guidelines      –       Glassmorphism
+  1198→Reka    bentuk  sistem  mengguna        pakai   bahasa  visual  
+  1199→glassmorphism
+  1200→        –       permukaan       translusen      berlapis        dengan  kesan   kabur   latar,
+  1201→memberikan      kesan   kedalaman       (depth) dan     kemodenan       tanpa   mengorbankan    kebolehbacaan.
+  1202→14.1            Prinsip Reka    Bentuk  Teras
+  1203→ELEMEN
+  1204→SPESIFIKASI
+  1205→Latar   Belakang        (Background)
+  1206→Gradient        dinamik (cth.   biru    laut    →       teal:   
+  1207→#0f2545 →       #0891b2
+  1208→)       dengan  bentuk  bulatan/blob    translusen      yang    lembut
+  1209→sebagai hiasan  latar.
+  1210→Kad     Kaca    (Glass  Card)
+  1211→background:     rgba(255,255,255,0.15)
+  1212→;       
+  1213→backdrop-filter:        blur(16px)
+  1214→;       
+  1215→border: 1px     solid
+  1216→rgba(255,255,255,0.3)
+  1217→;       
+  1218→border-radius:  20px
+  1219→;       bayang  lembut  (
+  1220→box-shadow:     0       8px     32px    rgba(0,0,0,0.12)
+  1221→).
+  1222→Palet   Warna   Utama
+  1223→Primary:        
+  1224→#1E3A8A
+  1225→        (biru   JTM)    ·       Accent: 
+  1226→#06B6D4
+  1227→        (teal)  ·       Success:        
+  1228→#059669
+  1229→        ·       Warning:        
+  1230→#D97706
+  1231→        ·       Danger: 
+  1232→#DC2626
+  1233→Tipografi
+  1234→Font    sans-serif      moden   (cth.   
+  1235→Inter
+  1236→        /       
+  1237→Poppins
+  1238→);      saiz    responsif;      berat   (weight)        600–700 untuk   tajuk,  400     untuk   teks
+  1239→badan.
+  1240→Ikon
+  1241→Set     ikon    garis   nipis   (line   icons)  konsisten       –       cth.    Lucide/Phosphor Icons   –       sepadan dengan  estetika        ringan
+  1242→glassmorphism.
+  1243→Mod     Gelap   (Dark   Mode)
+  1244→Sokongan        togol   tema    gelap   –       kad     kaca    menggunakan     
+  1245→rgba(15,23,42,0.5)
+  1246→        di      atas    latar   gelap.
+  1247→Kontras &       Kebolehbacaan
+  1248→Nisbah  kontras teks-ke-latar   dikekalkan      ≥       4.5:1   walaupun        di      atas    permukaan       lut     sinar   (tambah overlay legap
+  1249→sederhana       di      belakang        teks    jika    perlu   –       keutamaan       kebolehbacaan   mengatasi       estetika).
+  1250→Mikro-interaksi
+  1251→Peralihan       lembut  (
+  1252→transition:     200–300ms       ease
+  1253→)       pada    hover/klik      butang; kesan   "lift"  halus   (translateY)    pada    kad
+  1254→apabila hover.
+  1255→14.2            Komponen        Utama
+  1256→BORANG  PELAWAT (MOBILE-FIRST)
+  1257→Reka    bentuk  satu-lajur      (single column),        langkah berperingkat    (stepper:
+  1258→Maklumat        →       Muat    Naik    ID      →       Semak   &       Hantar),        butang  besar   mesra
+  1259→sentuhan,       zon     "drag   &       drop"   muat    naik    dengan  pratonton       imej    dalam
+  1260→bingkai kaca.
+  1261→DASHBOARD       PENGAWAL        KESELAMATAN
+  1262→Susun   atur    grid    kad     status  (Menunggu       Kelulusan       /       Aktif   Dalam   Premis  /
+  1263→Sedia   Keluar),        penapis pantas, senarai boleh   skrol   dengan  kad     kaca    bagi
+  1264→setiap  pelawat memaparkan      status  berwarna        &       butang  tindakan        segera.
+  1265→SKRIN   PENGESAHAN      STAF
+  1266→Ringkas &       pantas  –       nama    pelawat,        tujuan, butang  "Sahkan Urusan
+  1267→Selesai"        besar,  medan   catatan wajib,  reka    bentuk  optimum untuk   skrin
+  1268→telefon.
+  1269→DASHBOARD       ANALITIK        ADMIN
+  1270→Kad     statistik       ringkasan       (KPI    cards)  di      bahagian        atas,   carta   arah    aliran
+  1271→(trend  chart)  lawatan mingguan/bulanan,       jadual  data    terperinci      boleh
+  1272→ditapis &       dieksport.
+  1273→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1274→Halaman 21
+  1275→
+  1276→===== PAGE 21 =====
+  1277→14.3            Contoh  Token   Reka    Bentuk  (Design Tokens  –       CSS     Variables)
+  1278→:root   {
+  1279→                --color-primary:        #1E3A8A;
+  1280→                --color-accent: #06B6D4;
+  1281→                --color-success:        #059669;
+  1282→                --color-warning:        #D97706;
+  1283→                --color-danger: #DC2626;
+  1284→                --glass-bg:     rgba(255,       255,    255,    0.15);
+  1285→                --glass-border: rgba(255,       255,    255,    0.30);
+  1286→                --glass-blur:   blur(16px);
+  1287→                --radius-lg:    20px;
+  1288→                --shadow-glass: 0       8px     32px    rgba(0,0,0,0.12);
+  1289→                --font-heading: 'Poppins',      sans-serif;
+  1290→                --font-body:    'Inter',        sans-serif;
+  1291→}
+  1292→.glass-card     {
+  1293→                background:     var(--glass-bg);
+  1294→                border: 1px     solid   var(--glass-border);
+  1295→                backdrop-filter:        var(--glass-blur);
+  1296→                -webkit-backdrop-filter:        var(--glass-blur);
+  1297→                border-radius:  var(--radius-lg);
+  1298→                box-shadow:     var(--shadow-glass);
+  1299→}
+  1300→Cadangan        Prompt  Z.ai:
+  1301→        "Bina   komponen        React   
+  1302→GlassCard
+  1303→        menggunakan     Tailwind        CSS     dengan  kelas   
+  1304→bg-white/15     backdrop-blur-xl        border  border-
+  1305→white/30        rounded-2xl     shadow-lg
+  1306→,       responsif,      dan     menyokong       mod     gelap   melalui varian  
+  1307→dark:bg-slate-900/50
+  1308→."
+  1309→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1310→Halaman 22
+  1311→
+  1312→===== PAGE 22 =====
+  1313→15.
+  1314→Screen  /       Module  Inventory
+  1315→#
+  1316→SKRIN
+  1317→PERANAN
+  1318→FUNGSI  UTAMA
+  1319→1
+  1320→Landing /       QR      Scan    Page
+  1321→Pelawat
+  1322→Halaman selamat datang, pautan  mula    permohonan,     pilihan bahasa.
+  1323→2
+  1324→Borang  Permohonan      Masuk
+  1325→Pelawat
+  1326→Langkah 1–2:    maklumat        &       muat    naik    ID.
+  1327→3
+  1328→Status  Permohonan
+  1329→Pelawat
+  1330→Semakan status  masa    nyata   menggunakan     kod     rujukan.
+  1331→4
+  1332→Borang  Maklum  Balas
+  1333→Pelawat
+  1334→Langkah 8:      rating  +       komen   selepas urusan  disahkan.
+  1335→5
+  1336→Log     Masuk   (Auth)
+  1337→Pengawal/Staf/Admin
+  1338→E-mel   +       kata    laluan  /       magic   link.
+  1339→6
+  1340→Dashboard       Kelulusan
+  1341→Pengawal
+  1342→Langkah 4:      senarai pending_approval        +       lulus/tolak.
+  1343→7
+  1344→Pendaftaran     Walk-In
+  1345→Pengawal
+  1346→Langkah 3:      daftar  pelawat secara  manual.
+  1347→8
+  1348→Dashboard       Pelawat Aktif
+  1349→Pengawal
+  1350→Langkah 7,      9,      10:     pantau  status  verifikasi      &       maklum  balas.
+  1351→9
+  1352→Skrin   Kelulusan       Keluar
+  1353→Pengawal
+  1354→Langkah 11:     benarkan        keluar  +       catatan.
+  1355→10
+  1356→Senarai Pelawat Saya
+  1357→Staf
+  1358→Langkah 5–6:    senarai pelawat menunggu        &       butang  sahkan.
+  1359→11
+  1360→Pengurusan      Pengguna
+  1361→Admin
+  1362→CRUD    akaun   Pengawal/Staf/Admin     &       jabatan.
+  1363→12
+  1364→Dashboard       Analitik
+  1365→Admin
+  1366→KPI,    carta   trend,  skor    kepuasan,       eksport laporan.
+  1367→13
+  1368→Log     Audit
+  1369→Admin
+  1370→Jejak   setiap  tindakan        sistem.
+  1371→14
+  1372→Tetapan Sistem
+  1373→Admin
+  1374→Konfigurasi     SLA,    dasar   pengekalan      data,   notis   PDPA.
+  1375→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1376→Halaman 23
+  1377→
+  1378→===== PAGE 23 =====
+  1379→16.
+  1380→Suggested       Enhancements    &       Future  Features
+  1381→Berikut cadangan        penambahbaikan  tambahan        (di     luar    11      langkah teras)  untuk   meningkatkan    lagi    kecekapan,      keselamatan     &
+  1382→pengalaman      pengguna        sistem  –       disusun mengikut        kategori.
+  1383→16.1            Kecekapan       Operasi
+  1384→CADANGAN
+  1385→MANFAAT
+  1386→QR      Code    &       Lencana Digital (Digital        Badge)
+  1387→Pelawat menerima        QR      code    selepas lulus;  diimbas di      pintu   masuk/keluar    untuk   pengesahan      pantas  tanpa
+  1388→perlu   cari    nama    secara  manual.
+  1389→Pra-pendaftaran oleh    Staf    (Host   Pre-Invite)
+  1390→Staf    boleh   menjemput       pelawat lebih   awal    (isi    nama,   tujuan, tarikh) –       pelawat hanya   perlu   sahkan  &       muat
+  1391→naik    ID      semasa  tiba,   mempercepatkan  proses  kelulusan.
+  1392→Notifikasi      Automatik       Ketibaan        Pelawat
+  1393→Staf    menerima        WhatsApp/SMS/e-mel      serta-merta     apabila pelawat mereka  "Checked-In",   mengurangkan
+  1394→masa    menunggu        di      lobi.
+  1395→Peringatan      Overstay        &       Eskalasi        Auto
+  1396→Jika    staf    tidak   sahkan  dalam   tempoh  SLA     (cth.   2       jam),   sistem  menghantar      peringatan      auto    &       memaklumkan
+  1397→penyelia.
+  1398→Profil  Pelawat Kerap   (Frequent       Visitor)
+  1399→Pelawat berulang        (kontraktor     tetap)  boleh   guna    semula  maklumat/ID     tersimpan       –       daftar  masuk   lebih   pantas
+  1400→pada    lawatan seterusnya.
+  1401→Mod     Kiosk   Layan   Diri    (Self-Service   Kiosk)
+  1402→Tablet  di      kaunter kemasukan       membolehkan     pelawat mendaftar       sendiri tanpa   memerlukan      telefon peribadi.
+  1403→16.2            Keselamatan     &       Kawalan
+  1404→CADANGAN
+  1405→MANFAAT
+  1406→Senarai Hitam   /       Pemantauan      (Blacklist      &
+  1407→Watchlist)
+  1408→Sistem  menyemak        automatik       no.     IC/pasport      terhadap        senarai hitam   semasa  pendaftaran     &       memberi
+  1409→amaran  kepada  Pengawal.
+  1410→OCR     Pengenalan      Diri    (Auto   Extract
+  1411→MyKad/Pasport)
+  1412→Imbasan ID      secara  automatik       mengisi medan   nama    &       no.     IC,     mengurangkan    kesilapan       input   manual.
+  1413→Senarai Evakuasi        Kecemasan       Masa    Nyata
+  1414→Satu    klik    memaparkan      senarai penuh   semua   pelawat &       staf    yang    berada  dalam   premis  semasa  kecemasan
+  1415→(kebakaran/gempa).
+  1416→Log     Kenderaan       &       Nombor  Plat
+  1417→Rekod   no.     plat    kenderaan       pelawat untuk   kawalan tempat  letak   kereta  &       keselamatan     tambahan.
+  1418→Deklarasi       Kesihatan       /       Item    Larangan
+  1419→Borang  tambahan        pengesahan      (cth.   tiada   bawa    barang  larangan)       sebelum kelulusan       diberikan,      jika
+  1420→diperlukan      oleh    dasar   keselamatan.
+  1421→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1422→Halaman 24
+  1423→
+  1424→===== PAGE 24 =====
+  1425→16.3            Analitik        &       Pengalaman      Pengguna
+  1426→CADANGAN
+  1427→MANFAAT
+  1428→Dashboard       Analitik        Lanjutan        +       Analisis
+  1429→Sentimen
+  1430→Analisis        automatik       komen   maklum  balas   (positif/negatif)       menggunakan     AI      untuk   kenal   pasti   isu
+  1431→perkhidmatan    berulang.
+  1432→Laporan Berjadual       (Scheduled      Reports)
+  1433→Laporan mingguan/bulanan        dihantar        automatik       ke      e-mel   pengurusan      (jumlah pelawat,        purata  masa    proses,
+  1434→skor    kepuasan).
+  1435→Papan   Pemuka  TV      Lobi    (Lobby  Display)
+  1436→Skrin   di      lobi    memaparkan      nama    pelawat dijangka        &       staf    tuan    rumah,  meningkatkan    kesan   profesionalisme
+  1437→penerimaan      tetamu.
+  1438→Antara  Muka    Dwibahasa       Penuh   +       Bahasa
+  1439→Tambahan
+  1440→BM/EN   sedia   ada     dalam   skop    Fasa    1;      tambah  Bahasa  Mandarin/Iban   mengikut        keperluan       pelawat setempat
+  1441→Bintulu,        Sarawak.
+  1442→Pembantu        Maya    AI      (Chatbot)
+  1443→Menggunakan     keupayaan       model   bahasa  (cth.   GLM     series) untuk   menjawab        soalan  lazim   pelawat (arah,
+  1444→waktu   operasi,        prosedur)       secara  automatik       dalam   borang.
+  1445→16.4            Integrasi       Masa    Hadapan
+  1446→CADANGAN
+  1447→MANFAAT
+  1448→Integrasi       Pintu   Pagar   Elektronik      (Boom
+  1449→Gate/Turnstile)
+  1450→Kelulusan       sistem  secara  automatik       membuka get     fizikal,        menghapuskan    keperluan       pengesahan      manual
+  1451→berulang.
+  1452→Pengecaman      Wajah   (Facial Recognition)
+  1453→Pengesahan      identiti        pantas  semasa  keluar-masuk    tanpa   perlu   tunjuk  semula  ID      setiap  kali    (bagi   pelawat
+  1454→kerap   sahaja, tertakluk       kelulusan       dasar).
+  1455→Single  Sign-On (SSO)   dengan  Direktori       Staf
+  1456→JTM
+  1457→Staf    log     masuk   terus   menggunakan     akaun   rasmi   jabatan,        mengurangkan    pengurusan      kata    laluan
+  1458→berasingan.
+  1459→Aplikasi        Mudah   Alih    (Native App)
+  1460→Aplikasi        khusus  untuk   Pengawal        Keselamatan     dengan  sokongan        pemberitahuan   tolak   (push   notification)   &
+  1461→mod     luar    talian  (offline        sync).
+  1462→Mod     Luar    Talian  Kiosk   (Offline        Fallback)
+  1463→Kaunter kekal   berfungsi       semasa  gangguan        internet        dengan  penyegerakan    data    automatik       apabila
+  1464→sambungan       pulih.
+  1465→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1466→Halaman 25
+  1467→
+  1468→===== PAGE 25 =====
+  1469→17.
+  1470→Deployment      Plan    (Supabase       +       Netlify)
+  1471→17.1            Persekitaran    (Environments)
+  1472→PERSEKITARAN
+  1473→PROJEK  SUPABASE
+  1474→SITE    NETLIFY
+  1475→TUJUAN
+  1476→Development
+  1477→vms-pltt-dev
+  1478→vms-pltt-dev.netlify.app
+  1479→Ujian   ciri    baharu, data    dummy   penuh.
+  1480→Staging /       UAT
+  1481→vms-pltt-staging
+  1482→vms-pltt-staging.netlify.app
+  1483→Ujian   penerimaan      pengguna        (UAT)   oleh    Pengawal        &       Staf
+  1484→sebenar.
+  1485→Production
+  1486→vms-pltt-prod
+  1487→Domain  rasmi   PLTT
+  1488→Bintulu/JTM     (custom
+  1489→domain)
+  1490→Sistem  produksi,       data    pelawat sebenar.
+  1491→17.2            Langkah Persediaan      Supabase
+  1492→1.      
+  1493→Cipta   projek  Supabase        baharu  &       catat   
+  1494→Project URL
+  1495→        dan     
+  1496→anon/public     key
+  1497→.
+  1498→2.      
+  1499→Jalankan        fail    migrasi skema   (
+  1500→supabase/migrations/*.sql
+  1501→)       menggunakan     Supabase        CLI:    
+  1502→supabase        db      push
+  1503→.
+  1504→3.      
+  1505→Konfigurasi     dasar   RLS     bagi    setiap  jadual  (lihat  Bahagian        13)     &       aktifkan        RLS     pada    semua   jadual  awam.
+  1506→4.      
+  1507→Cipta   bucket  Storage peribadi:       
+  1508→id-documents
+  1509→,       
+  1510→visitor-photos
+  1511→        dengan  dasar   akses   yang    ketat.
+  1512→5.      
+  1513→Konfigurasi     Supabase        Auth    –       aktifkan        kaedah  Email/Password, tetapkan        templat e-mel   (BM).
+  1514→6.      
+  1515→Jalankan        skrip   
+  1516→seed.sql
+  1517→        di      persekitaran    Development/Staging     sahaja  (bukan  Production).
+  1518→7.      
+  1519→Sediakan        Edge    Functions       (notifikasi,    validasi        state   machine)        &       deploy  menggunakan     
+  1520→supabase        functions       deploy
+  1521→.
+  1522→17.3            Langkah Persediaan      Netlify
+  1523→1.      
+  1524→Sambungkan      repositori      Git     (GitHub/GitLab) projek  frontend        ke      Netlify.
+  1525→2.      
+  1526→Tetapkan        
+  1527→Build   command
+  1528→        (cth.   
+  1529→npm     run     build
+  1530→)       dan     
+  1531→Publish directory
+  1532→        (cth.   
+  1533→dist
+  1534→).
+  1535→3.      
+  1536→Tambah  pembolehubah    persekitaran    (Environment    Variables):     
+  1537→VITE_SUPABASE_URL
+  1538→,       
+  1539→VITE_SUPABASE_ANON_KEY
+  1540→.
+  1541→4.      
+  1542→Aktifkan        
+  1543→Deploy  Previews
+  1544→        untuk   setiap  Pull    Request –       membolehkan     semakan sebelum digabung        ke      cawangan        utama.
+  1545→5.      
+  1546→Konfigurasi     domain  custom  &       HTTPS   (Netlify        menyediakan     sijil   SSL     automatik       melalui Let's   Encrypt).
+  1547→6.      
+  1548→Tetapkan        
+  1549→redirect        rules
+  1550→        (
+  1551→_redirects
+  1552→)       untuk   aplikasi        SPA     (
+  1553→/*      /index.html     200
+  1554→).
+  1555→Amaran  Keselamatan:
+  1556→        Hanya   
+  1557→anon/public     key
+  1558→        Supabase        yang    dibenarkan      berada  di      bahagian        frontend/Netlify        environment     variables.      
+  1559→service_role
+  1560→key
+  1561→        TIDAK   PERNAH  didedahkan      pada    kod     client  –       hanya   digunakan       dalam   Edge    Functions/persekitaran  pelayan yang    selamat.
+  1562→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1563→Halaman 26
+  1564→
+  1565→===== PAGE 26 =====
+  1566→18.
+  1567→Development     Roadmap &       Milestones
+  1568→FASA
+  1569→NAMA
+  1570→ANGGARAN
+  1571→TEMPOH
+  1572→AKTIVITI        UTAMA
+  1573→0
+  1574→Discovery       &       Design
+  1575→1–2     minggu
+  1576→Pengesahan      keperluan       (PRD    ini),   reka    bentuk  skema   pangkalan       data,   wireframe/mockup
+  1577→glassmorphism.
+  1578→1
+  1579→Persediaan      Infrastruktur
+  1580→3–5     hari
+  1581→Cipta   projek  Supabase,       konfigurasi     Netlify,        persediaan      repositori      Git     &       struktur        projek
+  1582→dengan  bantuan Z.ai.
+  1583→2
+  1584→Modul   Teras   Pelawat &
+  1585→Kelulusan
+  1586→2–3     minggu
+  1587→Borang  permohonan,     muat    naik    ID,     dashboard       kelulusan       Pengawal,       walk-in registration
+  1588→(Langkah        1–4).
+  1589→3
+  1590→Modul   Staf    &       Verifikasi
+  1591→1–2     minggu
+  1592→Skrin   pengesahan      staf,   semakan status  oleh    Pengawal        (Langkah        5–7).
+  1593→4
+  1594→Modul   Maklum  Balas   &
+  1595→Keluar
+  1596→1–2     minggu
+  1597→Borang  maklum  balas,  semakan berganda        Pengawal,       kelulusan       keluar  (Langkah        8–11).
+  1598→5
+  1599→Modul   Admin   &       Analitik
+  1600→1–2     minggu
+  1601→Pengurusan      pengguna,       dashboard       KPI,    log     audit,  eksport laporan.
+  1602→6
+  1603→Data    Contoh  &       Ujian   QA
+  1604→1       minggu
+  1605→Skrip   seed    data,   ujian   fungsian        penuh,  ujian   RLS     &       keselamatan,    ujian   responsif.
+  1606→7
+  1607→UAT     &       Latihan Pengguna
+  1608→1–2     minggu
+  1609→Ujian   penerimaan      pengguna        bersama Pengawal        &       Staf    sebenar PLTT    Bintulu,        sesi
+  1610→latihan.
+  1611→8
+  1612→Deployment      Produksi
+  1613→2–3     hari
+  1614→Deploy  akhir   ke      Netlify Production,     migrasi Supabase        Production,     domain  custom, go-
+  1615→live.
+  1616→9+
+  1617→Fasa    2       –       Enhancement
+  1618→Berterusan
+  1619→Ciri    tambahan        dari    Bahagian        16      mengikut        keutamaan       organisasi.
+  1620→Anggaran        keseluruhan     Fasa    0–8:    ±       9–14    minggu, bergantung      kepada  saiz    pasukan pembangunan     &       kelajuan        iterasi menggunakan     Z.ai    (GLM‑5.2)       sebagai pemangkin
+  1621→pembangunan     kod.
+  1622→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1623→Halaman 27
+  1624→
+  1625→===== PAGE 27 =====
+  1626→19.
+  1627→Success Metrics /       KPIs
+  1628→PETUNJUK        PRESTASI        (KPI)
+  1629→SASARAN
+  1630→Purata  masa    pemprosesan     pendaftaran     masuk   (submit
+  1631→→       approved)
+  1632→≤       3       minit
+  1633→Peratus permohonan      diluluskan/ditolak      dalam   SLA     (cth.
+  1634→5       minit)
+  1635→≥       90%
+  1636→Peratus lawatan dengan  pengesahan      staf    lengkap
+  1637→≥       95%
+  1638→Kadar   pengisian       borang  maklum  balas
+  1639→≥       80%     daripada        semua   lawatan selesai
+  1640→Skor    kepuasan        pelawat purata  (dari   borang  maklum
+  1641→balas)
+  1642→≥       4.2     /       5.0
+  1643→Masa    operasi sistem  (uptime)
+  1644→≥       99.5%   bulanan
+  1645→Sifar   insiden kebocoran       data    peribadi        pelawat
+  1646→0       insiden
+  1647→Pengurangan     penggunaan      kertas/log      manual
+  1648→100%    (penghapusan    penuh)
+  1649→20.
+  1650→Risks   &       Assumptions
+  1651→KATEGORI
+  1652→RISIKO
+  1653→MITIGASI
+  1654→Operasi
+  1655→Pengawal/Staf   kurang  mahir   teknologi,      enggan  berubah
+  1656→daripada        buku    log
+  1657→Sesi    latihan hands-on,       antara  muka    ringkas &       intuitif,       sokongan
+  1658→panduan pengguna        bergambar.
+  1659→Teknikal
+  1660→Gangguan        sambungan       internet        di      kaunter kemasukan
+  1661→Cadangan        mod     luar    talian  fallback        (Fasa   2);     talian  internet        sandaran
+  1662→(backup connection)     di      premis.
+  1663→Keselamatan     Data
+  1664→Kebocoran       dokumen bukti   pengenalan      diri    pelawat
+  1665→Bucket  storan  peribadi,       signed  URL     bertempoh       pendek, RLS     ketat,  log
+  1666→akses   penuh.
+  1667→Pematuhan
+  1668→Ketidakpatuhan  PDPA    dalam   pengendalian    data    peribadi
+  1669→Notis   &       kebenaran       (consent)       eksplisit,      dasar   pengekalan      data    jelas,
+  1670→semakan berkala oleh    Admin.
+  1671→Skop
+  1672→"Scope  creep"  daripada        permintaan      ciri    tambahan        semasa
+  1673→pembangunan
+  1674→Pendekatan      fasa    jelas   (Fasa   1       =       11      langkah teras;  Fasa    2       =
+  1675→enhancement,    Bahagian        16).
+  1676→ANDAIAN (ASSUMPTIONS)
+  1677→PLTT    Bintulu mempunyai       akses   internet        stabil  di      kaunter kemasukan       &       premis  staf.
+  1678→Setiap  staf    &       Pengawal        Keselamatan     mempunyai       alamat  e-mel/telefon   bimbit  rasmi   untuk   pendaftaran     akaun.
+  1679→Bajet   &       kelulusan       pentadbiran     untuk   pelan   berbayar        Supabase        (Pro    tier)   &       Netlify tersedia        jika    had     percuma (free   tier)   tidak
+  1680→mencukupi       untuk   trafik  produksi.
+  1681→Pihak   pengurusan      PLTT    Bintulu bersetuju       dengan  dasar   consent &       pengekalan      data    PDPA    yang    dicadangkan.
+  1682→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1683→Halaman 28
+  1684→
+  1685→===== PAGE 28 =====
+  1686→21.
+  1687→Appendix        –       Prompting       Z.ai    (GLM‑5.2)
+  1688→Bahagian        ini     menyediakan     cadangan        struktur        prompt  bagi    membantu        pasukan pembangunan     menggunakan     dokumen PRD     ini     secara
+  1689→terus   dengan  Z.ai    (GLM‑5.2)       untuk   menjana kod     sistem.
+  1690→PROMPT  CADANGAN        –       PERSEDIAAN      PROJEK
+  1691→"Bina   aplikasi        web     React   +       Vite    +       Tailwind        CSS     bernama 'VMS    PLTT    Bintulu'        dengan  reka    bentuk  glassmorphism   (rujuk  token   reka    bentuk  Bahagian
+  1692→14.3).  Sambungkan      kepada  Supabase        menggunakan     @supabase/supabase-js.  Struktur        folder: /components,    /pages, /hooks, /lib/supabase.js,       /types.
+  1693→Sediakan        routing untuk   4       peranan:        pelawat (awam), pengawal,       staf,   admin."
+  1694→PROMPT  CADANGAN        –       SKEMA   PANGKALAN       DATA
+  1695→"Jana   fail    migrasi SQL     Supabase        untuk   jadual  berikut:        profiles,       visitors,       visits, visitor_documents,      feedback,       audit_logs,     notifications,  departments     (rujuk
+  1696→Bahagian        12      dokumen PRD).   Sertakan        dasar   Row     Level   Security        bagi    setiap  peranan (Bahagian       13)     dan     trigger function        enforce_exit_conditions()."
+  1697→PROMPT  CADANGAN        –       MODUL   &       DATA    CONTOH
+  1698→"Jana   skrip   seed.sql        dengan  data    contoh  (dummy) mengikut        spesifikasi     Bahagian        12.5    –       termasuk        pelbagai        status  lawatan untuk   membolehkan     ujian
+  1699→penuh   aliran  kerja   11      langkah dalam   dokumen ini."
+  1700→PROMPT  CADANGAN        –       DEPLOYMENT
+  1701→"Sediakan       konfigurasi     netlify.toml    dengan  build   command,        publish directory,      dan     redirect        rule    SPA.    Senaraikan      environment     variables       yang    diperlukan
+  1702→tanpa   mendedahkan     service_role    key     (rujuk  Bahagian        17)."
+  1703→Glosari Ringkas
+  1704→ISTILAH
+  1705→DEFINISI
+  1706→RLS
+  1707→Row     Level   Security        –       ciri    keselamatan     Postgres/Supabase       yang    mengawal        akses   baris   data    mengikut        dasar/peranan.
+  1708→Glassmorphism
+  1709→Gaya    reka    bentuk  UI      menggunakan     permukaan       translusen      berkabur        (blur)  menyerupai      kaca    buram.
+  1710→JAMstack
+  1711→Seni    bina    web     JavaScript-API-Markup   –       frontend        statik  yang    berkomunikasi   terus   dengan  API/backend-as-a-service.
+  1712→PDPA
+  1713→Personal        Data    Protection      Act     2010    –       Akta    Perlindungan    Data    Peribadi        Malaysia.
+  1714→State   Machine
+  1715→Model   logik   yang    mentakrifkan    set     keadaan (status)        tetap   &       peralihan       sah     antara  keadaan tersebut.
+  1716→PRD     –       Sistem  Pengurusan      Masuk–Keluar    Pelawat |       PLTT    Bintulu,        JTM
+  1717→Halaman 29      –       Tamat   Dokumen
+  1718→
