@@ -1,3 +1,14 @@
+-- ============================================================
+-- VMS PLTT Bintulu - Supabase Database Setup Script
+-- ============================================================
+-- Run this entire script in Supabase SQL Editor (Dashboard → SQL Editor → New Query → paste → Run)
+-- This creates all tables and inserts all seed data.
+-- Safe to run multiple times (uses ON CONFLICT DO NOTHING).
+-- ============================================================
+
+-- Enable pgcrypto extension for gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
