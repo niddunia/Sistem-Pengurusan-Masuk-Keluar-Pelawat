@@ -470,11 +470,11 @@ INSERT INTO "Notification" ("id", "recipientId", "recipientType", "visitId", "ch
 INSERT INTO "Notification" ("id", "recipientId", "recipientType", "visitId", "channel", "title", "message", "isRead", "sentAt") VALUES (gen_random_uuid()::text, 'user-staff-hassan', 'staff', 'visit-009', 'in_app', 'Pelawat Telah Tiba', 'Puan Faridah binti Omar telah check-in untuk urusan: Mesyuarat JKR kerja awam', false, NOW());
 
 -- SYSTEM SETTINGS
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'staff_verification_sla_hours', '"2"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'data_retention_months', '"12"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'overstay_threshold_minutes', '"180"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'max_upload_size_mb', '"5"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'pdpa_notice_text', '"Maklumat peribadi anda akan dikumpul dan diproses selaras dengan Akta Perlindungan Data Peribadi 2010 (PDPA) bagi tujuan pengurusan lawatan dan keselamatan premis PLTT Bintulu."') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'organization_name', '"Pusat Latihan Teknologi Tinggi Bintulu (PLTT Bintulu)"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
-INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'organization_short', '"PLTT Bintulu"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value");
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'staff_verification_sla_hours', '"2"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'data_retention_months', '"12"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'overstay_threshold_minutes', '"180"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'max_upload_size_mb', '"5"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'pdpa_notice_text', '"Maklumat peribadi anda akan dikumpul dan diproses selaras dengan Akta Perlindungan Data Peribadi 2010 (PDPA) bagi tujuan pengurusan lawatan dan keselamatan premis PLTT Bintulu."') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'organization_name', '"Pusat Latihan Teknologi Tinggi Bintulu (PLTT Bintulu)"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
+INSERT INTO "SystemSetting" ("id", "key", "value") VALUES (gen_random_uuid()::text, 'organization_short', '"PLTT Bintulu"') ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value";
 
