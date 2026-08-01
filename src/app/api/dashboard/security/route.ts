@@ -98,6 +98,6 @@ export async function GET(_req: NextRequest) {
     });
   } catch (error) {
     console.error("Security dashboard error:", error);
-    return apiError("Ralat pelayan.", 500);
+    return apiError("Ralat pelayan: " + (error as Error).message, 500);
   }
 }
