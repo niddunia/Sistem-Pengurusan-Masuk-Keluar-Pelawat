@@ -166,26 +166,61 @@ export const db = {
       const res = await restFetch(`/Profile?${filters}&limit=1`);
       return Array.isArray(res) && res.length > 0 ? (res[0] as Profile) : null;
     },
-    findMany: async ({ where, select, include, orderBy }: { where?: Record<string, unknown>; select?: Record<string, boolean>; include?: Record<string, unknown>; orderBy?: Record<string, string> } = {}) => {
+    findMany: async ({ where, select, include, orderBy }: { where?: Record<string, unknown>; select?: Record<string, unknown>; include?: Record<string, unknown>; orderBy?: Record<string, unknown> } = {}) => {
       let path = "/Profile?";
       if (where) {
         const filters = Object.entries(where).map(([k, v]) => {
           if (v === null) return `${k}=is.null`;
+          if (typeof v === "object" && v !== null && "in" in v) {
+            const arr = (v as Record<string, unknown>).in as unknown[];
+            return `${k}=in.(${arr.map(x => encodeURIComponent(String(x))).join(",")})`;
+          }
           return `${k}=eq.${encodeURIComponent(String(v))}`;
         }).join("&");
         path += filters + "&";
       }
       // Build select with nested relations
+      const cols: string[] = ["*"];
       if (include) {
-        const cols = select ? Object.keys(select) : ["*"];
         if (include.department) cols.push("department:Department(id,name)");
-        path += `select=${cols.join(",")}&`;
-      } else if (select) {
-        path += `select=${Object.keys(select).join(",")}&`;
-      } else {
-        path += "select=*&";
       }
-      path += "order=role.asc,fullName.asc&limit=200";
+      // Handle select with nested relations (e.g., { department: { select: { id, name } } })
+      if (select) {
+        const selectCols: string[] = [];
+        for (const [k, v] of Object.entries(select)) {
+          if (typeof v === "object" && v !== null) {
+            // Nested relation select
+            const nested = v as Record<string, unknown>;
+            if (nested.select) {
+              const nestedCols = Object.keys(nested.select as Record<string, unknown>).join(",");
+              selectCols.push(`${k}:Department(${nestedCols})`);
+            }
+          } else if (v === true) {
+            selectCols.push(k);
+          }
+        }
+        if (selectCols.length > 0) {
+          cols.length = 0; // Clear default "*" if we have explicit selects
+          cols.push(...selectCols);
+        }
+      }
+      path += `select=${cols.join(",")}&`;
+      // Build order - support both simple and nested (e.g., { department: { name: "asc" } })
+      const orderParts: string[] = [];
+      if (orderBy) {
+        for (const [k, v] of Object.entries(orderBy)) {
+          if (typeof v === "object" && v !== null) {
+            // Nested order like { department: { name: "asc" } }
+            const nested = v as Record<string, string>;
+            for (const [nk, nv] of Object.entries(nested)) {
+              orderParts.push(`${k}.${nk}.${nv}`);
+            }
+          } else {
+            orderParts.push(`${k}.${v}`);
+          }
+        }
+      }
+      path += `order=${orderParts.length > 0 ? orderParts.join(",") : "role.asc,fullName.asc"}&limit=200`;
       const res = await restFetch(path);
       return (res as Profile[]) || [];
     },
