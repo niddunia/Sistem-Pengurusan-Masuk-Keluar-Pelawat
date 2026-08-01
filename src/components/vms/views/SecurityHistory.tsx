@@ -374,7 +374,7 @@ export function SecurityHistory() {
                     <TableCell className="font-mono text-xs text-cyan-300">
                       {v.referenceCode}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs text-white/90">
                       <div className="font-medium text-white">{v.visitor.fullName}</div>
                       <div className="text-xs text-white/50">{v.visitor.company || "-"}</div>
                     </TableCell>
@@ -387,7 +387,7 @@ export function SecurityHistory() {
                         <div className="text-xs text-white/50">{v.hostStaff.department.name}</div>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs text-white/90">
                       <StatusBadge status={v.status} language={language} />
                     </TableCell>
                     <TableCell className="text-xs text-white/70">
@@ -408,7 +408,7 @@ export function SecurityHistory() {
                         <span className="text-white/30">—</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs text-white/90">
                       {v.feedback?.rating != null ? (
                         <div className="flex items-center gap-1">
                           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -455,11 +455,11 @@ export function SecurityHistory() {
                 <div className="grid grid-cols-2 gap-2 text-xs text-white/70 mb-2">
                   <div className="flex items-center gap-1 min-w-0">
                     <Building2 className="w-3 h-3 text-white/40 shrink-0" />
-                    <span className="truncate">{v.visitor.company || "-"}</span>
+                    <span className="truncate text-white/90">{v.visitor.company || "-"}</span>
                   </div>
                   <div className="flex items-center gap-1 min-w-0">
                     <User className="w-3 h-3 text-white/40 shrink-0" />
-                    <span className="truncate">{v.hostStaff?.fullName || "-"}</span>
+                    <span className="truncate text-white/90">{v.hostStaff?.fullName || "-"}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3 text-white/40" />

@@ -389,19 +389,19 @@ export function StaffDashboard() {
                   {verifying.visitor.company && (
                     <div className="flex items-center gap-1.5 min-w-0">
                       <Building2 className="w-3.5 h-3.5 text-white/40 shrink-0" />
-                      <span className="truncate">{verifying.visitor.company}</span>
+                      <span className="truncate text-white/90">{verifying.visitor.company}</span>
                     </div>
                   )}
                   {verifying.visitor.phone && (
                     <div className="flex items-center gap-1.5 min-w-0">
                       <Phone className="w-3.5 h-3.5 text-white/40 shrink-0" />
-                      <span className="truncate">{verifying.visitor.phone}</span>
+                      <span className="truncate text-white/90">{verifying.visitor.phone}</span>
                     </div>
                   )}
                   {verifying.checkedInAt && (
                     <div className="flex items-center gap-1.5 min-w-0">
                       <CalendarClock className="w-3.5 h-3.5 text-white/40 shrink-0" />
-                      <span className="truncate">
+                      <span className="truncate text-white/90">
                         {language === "bm" ? "Masuk" : "In"}: {format(new Date(verifying.checkedInAt), "dd MMM, HH:mm")}
                       </span>
                     </div>
@@ -409,7 +409,7 @@ export function StaffDashboard() {
                   {verifying.visitor.email && (
                     <div className="flex items-center gap-1.5 min-w-0">
                       <Mail className="w-3.5 h-3.5 text-white/40 shrink-0" />
-                      <span className="truncate">{verifying.visitor.email}</span>
+                      <span className="truncate text-white/90">{verifying.visitor.email}</span>
                     </div>
                   )}
                 </div>
@@ -535,7 +535,7 @@ export function StaffDashboard() {
                   <div className="flex items-center justify-between gap-2">
                     <div className="text-xs text-white/70 truncate flex items-center gap-1.5 min-w-0">
                       <FileText className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
-                      <span className="truncate">{docViewer.docs[docViewer.idx].fileName}</span>
+                      <span className="truncate text-white/90">{docViewer.docs[docViewer.idx].fileName}</span>
                     </div>
                     <a
                       href={docViewer.docs[docViewer.idx].filePath}
@@ -677,7 +677,7 @@ function WaitingCard({
         {visit.visitor.company && (
           <div className="flex items-center gap-1.5 text-xs text-white/70 min-w-0">
             <Building2 className="w-3.5 h-3.5 text-white/40 shrink-0" />
-            <span className="truncate">{visit.visitor.company}</span>
+            <span className="truncate text-white/90">{visit.visitor.company}</span>
           </div>
         )}
         {visit.visitor.phone && (
@@ -697,7 +697,7 @@ function WaitingCard({
             )}
           >
             <Clock className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">
+            <span className="truncate text-white/90">
               {language === "bm" ? "Masuk" : "In"} {format(checkedIn, "HH:mm")} ·{" "}
               {formatDistanceToNow(checkedIn, { addSuffix: true })}
             </span>
@@ -706,7 +706,7 @@ function WaitingCard({
         {visit.expectedVisitDate && !checkedIn && (
           <div className="flex items-center gap-1.5 text-xs text-white/70 min-w-0">
             <CalendarClock className="w-3.5 h-3.5 text-white/40 shrink-0" />
-            <span className="truncate">
+            <span className="truncate text-white/90">
               {language === "bm" ? "Dijangka" : "Expected"}: {format(new Date(visit.expectedVisitDate), "dd MMM, HH:mm")}
             </span>
           </div>
@@ -730,7 +730,7 @@ function WaitingCard({
           >
             <span className="flex items-center gap-1.5 min-w-0">
               <FileText className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
-              <span className="truncate">
+              <span className="truncate text-white/90">
                 {docs.length === 1
                   ? docs[0].fileName
                   : language === "bm"

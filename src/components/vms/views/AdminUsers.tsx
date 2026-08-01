@@ -355,7 +355,7 @@ export function AdminUsers() {
                 <TableBody>
                   {filtered.map((u) => (
                     <TableRow key={u.id} className="border-white/5 hover:bg-white/5">
-                      <TableCell>
+                      <TableCell className="text-xs text-white/90">
                         <div className="flex items-center gap-2">
                           <div
                             className={cn(
@@ -378,14 +378,14 @@ export function AdminUsers() {
                         </div>
                       </TableCell>
                       <TableCell className="text-xs text-white/70">{u.email}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs text-white/90">
                         <RoleBadge role={u.role} language={language} />
                       </TableCell>
                       <TableCell className="text-xs text-white/70">
                         {u.department?.name || "—"}
                       </TableCell>
                       <TableCell className="text-xs text-white/70">{u.phone || "—"}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs text-white/90">
                         {u.isActive ? (
                           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-semibold">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -403,7 +403,7 @@ export function AdminUsers() {
                           ? formatDistanceToNow(new Date(u.lastLoginAt), { addSuffix: true })
                           : (language === "bm" ? "Belum pernah" : "Never")}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs text-white/90">
                         <div className="flex items-center gap-1 justify-end">
                           <button
                             onClick={() => setEditUser(u)}
@@ -465,11 +465,11 @@ export function AdminUsers() {
                   <div className="grid grid-cols-2 gap-2 mt-3 text-[11px]">
                     <div className="flex items-center gap-1.5 text-white/70">
                       <Building2 className="w-3 h-3 text-cyan-300" />
-                      <span className="truncate">{u.department?.name || "—"}</span>
+                      <span className="truncate text-white/90">{u.department?.name || "—"}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-white/70">
                       <Phone className="w-3 h-3 text-cyan-300" />
-                      <span className="truncate">{u.phone || "—"}</span>
+                      <span className="truncate text-white/90">{u.phone || "—"}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-2 border-t border-white/5">

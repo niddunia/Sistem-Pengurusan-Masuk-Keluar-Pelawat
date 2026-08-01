@@ -529,7 +529,7 @@ export function VisitorRegisterView() {
                   ) : (
                     Object.entries(staffByDept).map(([dept, members]) => (
                       <SelectGroup key={dept}>
-                        <SelectLabel className="text-cyan-700 font-semibold">{dept}</SelectLabel>
+                        <SelectLabel className="text-cyan-300 font-semibold">{dept}</SelectLabel>
                         {members.map((m) => (
                           <SelectItem key={m.id} value={m.id}>
                             {m.fullName}

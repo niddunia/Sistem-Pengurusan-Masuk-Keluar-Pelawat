@@ -1077,7 +1077,7 @@ function DocumentPreview({
         ) : (
           <div className="p-8 text-center text-white/70">
             <FileText className="w-12 h-12 mx-auto mb-2 text-white/50" />
-            <p className="text-sm">{language === "bm" ? "Pratonton tidak tersedia" : "Preview not available"}</p>
+            <p className="text-sm text-white/80">{language === "bm" ? "Pratonton tidak tersedia" : "Preview not available"}</p>
             <a
               href={doc.filePath}
               target="_blank"
@@ -1116,9 +1116,9 @@ function InfoLine({
 }) {
   return (
     <div className="flex items-center gap-1.5 min-w-0">
-      <Icon className="w-3.5 h-3.5 text-white/50 shrink-0" />
-      <span className="truncate">
-        {label && <span className="text-white/40 mr-1">{label}:</span>}
+      <Icon className="w-3.5 h-3.5 text-white/60 shrink-0" />
+      <span className="truncate text-white/90">
+        {label && <span className="text-white/50 mr-1">{label}:</span>}
         {text}
       </span>
     </div>
@@ -1129,7 +1129,7 @@ function ConditionChip({ ok, label }: { ok: boolean; label: string }) {
   return (
     <div className={cn("flex items-center gap-1 text-xs", ok ? "text-emerald-300" : "text-white/40")}>
       {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-      <span className="truncate">{label}</span>
+      <span className="truncate text-white/90">{label}</span>
     </div>
   );
 }

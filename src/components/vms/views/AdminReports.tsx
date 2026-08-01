@@ -481,7 +481,7 @@ export function AdminReports() {
               className="px-2 py-1.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/70 font-mono flex items-center gap-1.5"
             >
               <FileText className="w-3 h-3 text-cyan-300 flex-shrink-0" />
-              <span className="truncate">{col}</span>
+              <span className="truncate text-white/90">{col}</span>
             </div>
           ))}
         </div>

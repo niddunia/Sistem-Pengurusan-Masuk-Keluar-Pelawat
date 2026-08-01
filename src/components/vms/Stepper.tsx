@@ -44,7 +44,7 @@ export function Stepper({
                   isComplete
                     ? "bg-cyan-500 border-cyan-400 text-white shadow-lg shadow-cyan-500/40"
                     : isCurrent
-                    ? "bg-white border-cyan-500 text-cyan-700 shadow-lg shadow-cyan-500/30 scale-110"
+                    ? "bg-white border-cyan-500 text-cyan-300 shadow-lg shadow-cyan-500/30 scale-110"
                     : "bg-white/10 border-white/30 text-white/60"
                 )}
               >

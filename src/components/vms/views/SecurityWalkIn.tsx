@@ -676,7 +676,7 @@ export function SecurityWalkIn() {
             {uploading ? (
               <div className="flex flex-col items-center gap-2 text-white/80">
                 <Loader2 className="w-8 h-8 animate-spin" />
-                <p className="text-sm">{language === "bm" ? "Memuat naik..." : "Uploading..."}</p>
+                <p className="text-sm text-white/80">{language === "bm" ? "Memuat naik..." : "Uploading..."}</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 text-white/70">

@@ -475,7 +475,7 @@ export function AdminAuditLog() {
                             {label}
                           </span>
                         </TableCell>
-                        <TableCell className="text-xs">
+                        <TableCell className="text-xs text-white/90">
                           {l.visit ? (
                             <div>
                               <div className="font-mono text-cyan-300 text-[11px]">

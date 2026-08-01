@@ -522,7 +522,7 @@ export function AdminDashboard() {
                       className="w-2 h-2 rounded-sm flex-shrink-0"
                       style={{ backgroundColor: entry.color }}
                     />
-                    <span className="truncate">{entry.name}</span>
+                    <span className="truncate text-white/90">{entry.name}</span>
                     <span className="ml-auto font-semibold">{entry.value}</span>
                   </div>
                 ))}
