@@ -166,7 +166,7 @@ export const db = {
       const res = await restFetch(`/Profile?${filters}&limit=1`);
       return Array.isArray(res) && res.length > 0 ? (res[0] as Profile) : null;
     },
-    findMany: async ({ where, select, orderBy }: { where?: Record<string, unknown>; select?: Record<string, boolean>; orderBy?: Record<string, string> } = {}) => {
+    findMany: async ({ where, select, include, orderBy }: { where?: Record<string, unknown>; select?: Record<string, boolean>; include?: Record<string, unknown>; orderBy?: Record<string, string> } = {}) => {
       let path = "/Profile?";
       if (where) {
         const filters = Object.entries(where).map(([k, v]) => {
@@ -175,9 +175,13 @@ export const db = {
         }).join("&");
         path += filters + "&";
       }
-      if (select) {
-        const cols = Object.keys(select).join(",");
-        path += `select=${cols}&`;
+      // Build select with nested relations
+      if (include) {
+        const cols = select ? Object.keys(select) : ["*"];
+        if (include.department) cols.push("department:Department(id,name)");
+        path += `select=${cols.join(",")}&`;
+      } else if (select) {
+        path += `select=${Object.keys(select).join(",")}&`;
       } else {
         path += "select=*&";
       }
