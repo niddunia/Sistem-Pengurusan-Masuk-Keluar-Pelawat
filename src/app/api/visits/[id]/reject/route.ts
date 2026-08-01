@@ -36,7 +36,7 @@ export async function POST(
       data: {
         status: "rejected",
         approvedById: session.session.user.id,
-        approvedAt: new Date(),
+        approvedAt: new Date().toISOString(),
         rejectionReason: reason,
       },
       include: { visitor: true },

@@ -57,7 +57,7 @@ export async function POST(
       });
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
     const updated = await db.visit.update({
       where: { id },
       data: {

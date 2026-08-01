@@ -32,7 +32,7 @@ export async function POST(
       data: {
         status: "approved",
         approvedById: session.session.user.id,
-        approvedAt: new Date(),
+        approvedAt: new Date().toISOString(),
       },
       include: {
         visitor: true,

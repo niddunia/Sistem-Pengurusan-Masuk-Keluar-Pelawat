@@ -11,8 +11,8 @@ export async function GET(_req: NextRequest) {
     }
 
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const overstayThreshold = new Date(now.getTime() - 3 * 60 * 60 * 1000); // 3 hours
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const overstayThreshold = new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString(); // 3 hours
 
     const [
       pendingApproval,
@@ -98,6 +98,6 @@ export async function GET(_req: NextRequest) {
     });
   } catch (error) {
     console.error("Security dashboard error:", error);
-    return apiError("Ralat pelayan: " + (error as Error).message, 500);
+    return apiError("Ralat pelayan.", 500);
   }
 }

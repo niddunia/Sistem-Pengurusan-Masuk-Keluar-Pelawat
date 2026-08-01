@@ -42,7 +42,7 @@ export async function POST(
       return apiError("Maklum balas untuk lawatan ini telah dihantar sebelumnya.");
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
     await db.feedback.create({
       data: {
         visitId: id,

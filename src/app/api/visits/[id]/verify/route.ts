@@ -43,7 +43,7 @@ export async function POST(
       );
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
     // Transition to pending_feedback (menunggu maklum balas pelawat)
     const updated = await db.visit.update({
       where: { id },

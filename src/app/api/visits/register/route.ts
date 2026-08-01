@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
         visitorId: visitor.id,
         purpose,
         hostStaffId,
-        expectedVisitDate: new Date(expectedVisitDate),
+        expectedVisitDate: new Date(expectedVisitDate).toISOString(),
         status: "pending_approval",
         pdpaConsent: true,
       },

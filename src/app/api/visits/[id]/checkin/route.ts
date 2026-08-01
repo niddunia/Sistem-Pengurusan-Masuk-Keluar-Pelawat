@@ -32,7 +32,7 @@ export async function POST(
       where: { id },
       data: {
         status: "in_progress",
-        checkedInAt: visit.checkedInAt || new Date(),
+        checkedInAt: visit.checkedInAt || new Date().toISOString(),
       },
       include: {
         visitor: true,

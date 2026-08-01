@@ -20,8 +20,8 @@ export async function GET(req: NextRequest) {
     if (status && status !== "all") where.status = status;
     if (from || to) {
       where.createdAt = {};
-      if (from) where.createdAt.gte = new Date(from);
-      if (to) where.createdAt.lte = new Date(to);
+      if (from) where.createdAt.gte = new Date(from).toISOString();
+      if (to) where.createdAt.lte = new Date(to).toISOString();
     }
 
     const visits = await db.visit.findMany({
