@@ -80,6 +80,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/",
   },
-  url: process.env.NEXTAUTH_URL,
+  url: process.env.NEXTAUTH_URL || "https://sistem-pengurusan-masuk-keluar-pela.vercel.app",
   secret: process.env.NEXTAUTH_SECRET || "pltbintulu-vms-dev-secret-key-2026",
 };
