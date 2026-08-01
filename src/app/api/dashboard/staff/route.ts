@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole } from "@/lib/api-utils";
 
 // GET /api/dashboard/staff - Staff dashboard: my visitors (FR-21, FR-22)

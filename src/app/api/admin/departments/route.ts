@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole, sanitizeString, logAudit } from "@/lib/api-utils";
 
 // GET /api/admin/departments - List all departments
@@ -11,13 +11,24 @@ export async function GET(_req: NextRequest) {
     }
 
     const departments = await db.department.findMany({
-      include: {
-        _count: { select: { profiles: true } },
-      },
       orderBy: { name: "asc" },
     });
 
-    return apiSuccess(departments);
+    // Fetch profile counts per department separately
+    const profiles = await db.profile.findMany({ select: { departmentId: true } });
+    const profileCountMap = new Map<string, number>();
+    for (const p of profiles) {
+      if (p.departmentId) {
+        profileCountMap.set(p.departmentId, (profileCountMap.get(p.departmentId) || 0) + 1);
+      }
+    }
+
+    const result = departments.map(d => ({
+      ...d,
+      _count: { profiles: profileCountMap.get(d.id) || 0 },
+    }));
+
+    return apiSuccess(result);
   } catch (error) {
     console.error("List departments error:", error);
     return apiError("Ralat pelayan.", 500);

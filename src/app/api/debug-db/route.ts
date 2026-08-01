@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import bcrypt from "bcryptjs";
 
 export async function GET() {
@@ -8,17 +8,17 @@ export async function GET() {
     steps: [] as Array<{ step: string; success: boolean; message: string; data?: unknown }>,
   };
 
-  // Step 1: Test database connection
+  // Step 1: Test database connection via REST API
   try {
     const userCount = await db.profile.count();
     results.steps.push({
-      step: "1. Database Connection",
+      step: "1. Database Connection (REST API)",
       success: true,
       message: `Connected! Found ${userCount} users in database.`,
     });
   } catch (e) {
     results.steps.push({
-      step: "1. Database Connection",
+      step: "1. Database Connection (REST API)",
       success: false,
       message: `FAILED: ${(e as Error).message}`,
     });
@@ -29,7 +29,6 @@ export async function GET() {
   try {
     const user = await db.profile.findUnique({
       where: { email: "faizal@pltbintulu.gov.my" },
-      select: { id: true, email: true, fullName: true, role: true, isActive: true, passwordHash: true },
     });
     if (!user) {
       results.steps.push({
@@ -42,7 +41,7 @@ export async function GET() {
         step: "2. Find User",
         success: true,
         message: `User found: ${user.fullName}, role: ${user.role}, active: ${user.isActive}`,
-        data: { ...user, passwordHash: user.passwordHash.slice(0, 10) + "..." },
+        data: { ...user, passwordHash: user.passwordHash?.slice(0, 10) + "..." },
       });
 
       // Step 3: Test password verification
@@ -75,9 +74,10 @@ export async function GET() {
   results.steps.push({
     step: "4. Environment",
     success: true,
-    message: `DATABASE_URL starts with: ${process.env.DATABASE_URL?.slice(0, 30)}...`,
+    message: `SUPABASE_URL: ${process.env.SUPABASE_URL || "(using default)"}`,
     data: {
-      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      hasSupabaseUrl: !!process.env.SUPABASE_URL,
+      hasSupabaseKey: !!process.env.SUPABASE_ANON_KEY,
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
       hasNextAuthUrl: process.env.NEXTAUTH_URL,
       nodeEnv: process.env.NODE_ENV,

@@ -1,7 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
+import { logAudit } from "@/lib/api-utils";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -36,17 +37,15 @@ export const authOptions: NextAuthOptions = {
         // Update last login
         await db.profile.update({
           where: { id: user.id },
-          data: { lastLoginAt: new Date() },
+          data: { lastLoginAt: new Date().toISOString() },
         });
 
         // Audit log
-        await db.auditLog.create({
-          data: {
-            actorId: user.id,
-            actorRole: user.role,
-            action: "login",
-            details: JSON.stringify({ email: user.email }),
-          },
+        await logAudit({
+          actorId: user.id,
+          actorRole: user.role,
+          action: "login",
+          details: JSON.stringify({ email: user.email }),
         });
 
         return {
@@ -81,7 +80,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/",
   },
-  // Use explicit URL to prevent NextAuth from resolving to localhost (fixes logout redirect)
   url: process.env.NEXTAUTH_URL,
   secret: process.env.NEXTAUTH_SECRET || "pltbintulu-vms-dev-secret-key-2026",
 };

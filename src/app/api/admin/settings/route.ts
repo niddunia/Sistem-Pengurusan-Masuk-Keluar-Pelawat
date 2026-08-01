@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole, logAudit } from "@/lib/api-utils";
 
 // GET /api/admin/settings - Get all system settings (FR-32)

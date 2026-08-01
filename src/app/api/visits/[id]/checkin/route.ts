@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, logAudit, requireRole } from "@/lib/api-utils";
 import { broadcast } from "@/lib/realtime";
 

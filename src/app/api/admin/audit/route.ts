@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole } from "@/lib/api-utils";
 
 // GET /api/admin/audit - Audit logs with filters (FR-30)

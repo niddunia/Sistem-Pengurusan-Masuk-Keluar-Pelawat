@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole } from "@/lib/api-utils";
 
 // GET /api/dashboard/admin - Admin analytics dashboard (FR-29, FR-30)
@@ -15,72 +15,49 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-    const [
-      totalVisits,
-      totalVisitors,
-      totalUsers,
-      activeVisitors,
-      pendingApproval,
-      visitsByStatus,
-      feedbackStats,
-      dailyTrend,
-      departmentStatsRaw,
-      recentVisits,
-    ] = await Promise.all([
-      db.visit.count({ where: { createdAt: { gte: startDate } } }),
-      db.visitor.count(),
-      db.profile.count({ where: { isActive: true } }),
-      db.visit.count({
-        where: {
-          status: { in: ["checked_in", "in_progress", "staff_verified", "pending_feedback", "feedback_submitted", "ready_for_exit"] },
-        },
-      }),
-      db.visit.count({ where: { status: "pending_approval" } }),
-      // Visits by status
-      db.visit.groupBy({
-        by: ["status"],
-        where: { createdAt: { gte: startDate } },
-        _count: true,
-      }),
-      // Feedback stats
-      db.feedback.aggregate({
-        where: { visit: { createdAt: { gte: startDate } } },
-        _avg: { rating: true },
-        _count: true,
-      }),
-      // Daily trend (last N days)
-      db.visit.findMany({
-        where: { createdAt: { gte: startDate } },
-        select: { createdAt: true, status: true },
-      }),
-      // Department stats — fetch visits with hostStaff.departmentId, group in JS
-      db.visit.findMany({
-        select: {
-          hostStaff: { select: { departmentId: true } },
-        },
-        where: { hostStaff: { departmentId: { not: null } } },
-      }),
-      // Recent visits
-      db.visit.findMany({
-        take: 10,
-        orderBy: { createdAt: "desc" },
-        include: {
-          visitor: { select: { fullName: true, company: true } },
-          hostStaff: { select: { fullName: true, department: { select: { name: true } } } },
-          feedback: { select: { rating: true } },
-        },
-      }),
-    ]);
+    // Fetch all visits with relations
+    const allVisits = await db.visit.findMany({
+      include: {
+        visitor: true,
+        hostStaff: true,
+        feedback: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 500,
+    });
 
-    // Process daily trend
+    // Fetch departments
+    const departments = await db.department.findMany();
+
+    // Count visitors and users via REST count
+    const totalVisitors = await db.visitor.count();
+    const totalUsers = await db.profile.count({ where: { isActive: true } });
+
+    // Compute visit counts
+    const totalVisits = allVisits.filter(v => new Date(v.createdAt) >= startDate).length;
+    const activeVisitors = allVisits.filter(v => ["checked_in", "in_progress", "staff_verified", "pending_feedback", "feedback_submitted", "ready_for_exit"].includes(v.status)).length;
+    const pendingApproval = allVisits.filter(v => v.status === "pending_approval").length;
+
+    // Status breakdown
+    const statusMap = new Map<string, number>();
+    for (const v of allVisits) {
+      statusMap.set(v.status, (statusMap.get(v.status) || 0) + 1);
+    }
+    const statusBreakdown = Array.from(statusMap.entries()).map(([status, count]) => ({ status, count }));
+
+    // Feedback stats
+    const feedbackList = allVisits.filter(v => v.feedback).map(v => v.feedback);
+    const avgRating = feedbackList.length > 0 ? feedbackList.reduce((sum, f) => sum + f.rating, 0) / feedbackList.length : 0;
+
+    // Daily trend
     const trendMap = new Map<string, { date: string; count: number; completed: number }>();
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
       const key = d.toISOString().slice(0, 10);
       trendMap.set(key, { date: key, count: 0, completed: 0 });
     }
-    for (const v of dailyTrend) {
-      const key = v.createdAt.toISOString().slice(0, 10);
+    for (const v of allVisits) {
+      const key = new Date(v.createdAt).toISOString().slice(0, 10);
       const entry = trendMap.get(key);
       if (entry) {
         entry.count++;
@@ -88,18 +65,15 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Aggregate department visit counts in JS
+    // Department breakdown
     const deptCountMap = new Map<string, number>();
-    for (const v of departmentStatsRaw) {
-      const deptId = v.hostStaff?.departmentId;
-      if (!deptId) continue;
-      deptCountMap.set(deptId, (deptCountMap.get(deptId) || 0) + 1);
+    for (const v of allVisits) {
+      const deptId = (v.hostStaff as Record<string, unknown>)?.departmentId as string;
+      if (deptId) {
+        deptCountMap.set(deptId, (deptCountMap.get(deptId) || 0) + 1);
+      }
     }
-    const deptIds = Array.from(deptCountMap.keys());
-    const departments = await db.department.findMany({
-      where: { id: { in: deptIds } },
-    });
-    const deptMap = new Map(departments.map((d) => [d.id, d.name]));
+    const deptMap = new Map(departments.map(d => [d.id, d.name]));
     const departmentBreakdown = Array.from(deptCountMap.entries())
       .map(([deptId, count]) => ({
         name: deptMap.get(deptId) || "Unknown",
@@ -107,11 +81,8 @@ export async function GET(req: NextRequest) {
       }))
       .sort((a, b) => b.visitCount - a.visitCount);
 
-    // Status breakdown
-    const statusBreakdown = visitsByStatus.map((s) => ({
-      status: s.status,
-      count: s._count,
-    }));
+    // Recent visits (first 10)
+    const recentVisits = allVisits.slice(0, 10);
 
     return apiSuccess({
       counts: {
@@ -122,8 +93,8 @@ export async function GET(req: NextRequest) {
         pendingApproval,
       },
       feedback: {
-        averageRating: feedbackStats._avg.rating ? Number(feedbackStats._avg.rating.toFixed(2)) : 0,
-        totalFeedback: feedbackStats._count,
+        averageRating: avgRating ? Number(avgRating.toFixed(2)) : 0,
+        totalFeedback: feedbackList.length,
       },
       statusBreakdown,
       dailyTrend: Array.from(trendMap.values()),
@@ -132,6 +103,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Admin dashboard error:", error);
-    return apiError("Ralat pelayan.", 500);
+    return apiError("Ralat pelayan: " + (error as Error).message, 500);
   }
 }

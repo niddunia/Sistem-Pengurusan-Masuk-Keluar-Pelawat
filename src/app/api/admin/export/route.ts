@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiError, requireRole } from "@/lib/api-utils";
 
 // GET /api/admin/export - Export visits as CSV (FR-31)

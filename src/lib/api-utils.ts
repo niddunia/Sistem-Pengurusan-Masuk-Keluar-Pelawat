@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";

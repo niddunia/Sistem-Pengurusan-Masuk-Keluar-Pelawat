@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/supabase-db";
 import { apiSuccess, apiError, requireRole } from "@/lib/api-utils";
 
 // GET /api/dashboard/security - Security dashboard stats (FR-11, FR-14, FR-15, FR-16)
