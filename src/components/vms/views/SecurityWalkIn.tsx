@@ -748,7 +748,7 @@ export function SecurityWalkIn() {
                   id="walkin-pdpa"
                   checked={form.pdpaConsent}
                   onCheckedChange={(v) => set("pdpaConsent", v === true)}
-                  className="mt-1"
+                  className="mt-1 border-2 border-white/50 bg-white/10"
                 />
                 <Label htmlFor="walkin-pdpa" className="text-xs text-amber-100/90 cursor-pointer leading-relaxed">
                   {t("pdpaConsent", language)}
