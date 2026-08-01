@@ -352,6 +352,10 @@ export const db = {
           else if (typeof v === "object" && v !== null) {
             const cond = v as Record<string, unknown>;
             if ("contains" in cond) filters.push(`${k}=ilike.*${encodeURIComponent(String(cond.contains))}*`);
+            else if ("in" in cond) {
+              const arr = cond.in as unknown[];
+              filters.push(`${k}=in.(${arr.map(x => encodeURIComponent(String(x))).join(",")})`);
+            }
             else if ("gte" in cond) filters.push(`${k}=gte.${encodeURIComponent(String(cond.gte))}`);
             else if ("gt" in cond) filters.push(`${k}=gt.${encodeURIComponent(String(cond.gt))}`);
             else if ("lte" in cond) filters.push(`${k}=lte.${encodeURIComponent(String(cond.lte))}`);
