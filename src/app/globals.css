@@ -284,7 +284,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-panel {
-  background: var(--glass-bg-strong);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: var(--glass-blur-strong);
   -webkit-backdrop-filter: var(--glass-blur-strong);
   border: 1px solid var(--glass-border);
