@@ -85,7 +85,7 @@ const DOC_TYPES = [
 ];
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
-const MAX_SIZE = 4 * 1024 * 1024; // 4MB limit (Vercel serverless)
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB limit (Vercel serverless)
 
 const EMPTY_FORM: FormData = {
   fullName: "",
@@ -198,8 +198,8 @@ export function VisitorRegisterView() {
       if (file.size > MAX_SIZE) {
         toast.error(
           language === "bm"
-            ? `Saiz fail melebihi 4MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
-            : `File exceeds 4MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+            ? `Saiz fail melebihi 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+            : `File exceeds 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
         );
         return;
       }
@@ -620,7 +620,7 @@ export function VisitorRegisterView() {
                     ? language === "bm" ? "Sedang memuat naik..." : "Uploading..."
                     : t("dragDrop", language)}
                 </p>
-                <p className="text-xs text-white/60 mt-1">JPG / PNG / PDF · {language === "bm" ? "Maks" : "Max"} 4MB</p>
+                <p className="text-xs text-white/60 mt-1">JPG / PNG / PDF · {language === "bm" ? "Maks" : "Max"} 5MB</p>
               </div>
             </div>
           </div>

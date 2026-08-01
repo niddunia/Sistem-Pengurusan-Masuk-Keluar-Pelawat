@@ -51,7 +51,7 @@ const DOC_TYPES = [
 ];
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
-const MAX_SIZE = 4 * 1024 * 1024; // 4MB limit (Vercel serverless)
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB limit (Vercel serverless)
 
 interface UploadedDoc {
   docType: string;
@@ -199,8 +199,8 @@ export function SecurityWalkIn() {
       if (file.size > MAX_SIZE) {
         toast.error(
           language === "bm"
-            ? `Saiz fail melebihi 4MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
-            : `File exceeds 4MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+            ? `Saiz fail melebihi 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
+            : `File exceeds 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB).`
         );
         return;
       }
@@ -682,7 +682,7 @@ export function SecurityWalkIn() {
               <div className="flex flex-col items-center gap-2 text-white/70">
                 <Upload className="w-8 h-8" />
                 <p className="text-sm font-medium">{t("dragDrop", language)}</p>
-                <p className="text-xs text-white/50">JPG / PNG / PDF · maks 4MB</p>
+                <p className="text-xs text-white/50">JPG / PNG / PDF · Maks 5MB</p>
               </div>
             )}
           </div>

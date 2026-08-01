@@ -3,9 +3,9 @@ import { apiSuccess, apiError, rateLimit } from "@/lib/api-utils";
 
 // POST /api/upload - File upload for ID documents (FR-03, FR-04)
 // Stores file as base64 data URL in the database (works on Vercel serverless)
-// Max 4MB (Vercel serverless body limit)
+// Max 5MB (Vercel serverless body limit)
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
-const MAX_SIZE = 4 * 1024 * 1024; // 4MB (Vercel serverless limit)
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB (Vercel serverless limit)
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (file.size > MAX_SIZE) {
-      return apiError(`Saiz fail melebihi had 4MB. Saiz semasa: ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+      return apiError(`Saiz fail melebihi had 5MB. Saiz semasa: ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
     }
 
     // Convert to base64 data URL
