@@ -303,6 +303,23 @@ h1, h2, h3, h4, h5, h6 {
   color-scheme: dark;
 }
 
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
+.glass-input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-input:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .dark .glass-input {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
