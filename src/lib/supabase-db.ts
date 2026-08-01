@@ -350,13 +350,19 @@ export const db = {
           if (v === null) filters.push(`${k}=is.null`);
           else if (Array.isArray(v)) filters.push(`${k}=in.(${v.map(x => encodeURIComponent(String(x))).join(",")})`);
           else if (typeof v === "object" && v !== null) {
-            // Handle { not: { in: [...] } } or { contains: "..." }
             const cond = v as Record<string, unknown>;
             if ("contains" in cond) filters.push(`${k}=ilike.*${encodeURIComponent(String(cond.contains))}*`);
+            else if ("gte" in cond) filters.push(`${k}=gte.${encodeURIComponent(String(cond.gte))}`);
+            else if ("gt" in cond) filters.push(`${k}=gt.${encodeURIComponent(String(cond.gt))}`);
+            else if ("lte" in cond) filters.push(`${k}=lte.${encodeURIComponent(String(cond.lte))}`);
+            else if ("lt" in cond) filters.push(`${k}=lt.${encodeURIComponent(String(cond.lt))}`);
             else if ("not" in cond) {
-              const notCond = cond.not as Record<string, unknown>;
-              if ("in" in notCond) filters.push(`${k}=notin.(${(notCond.in as unknown[]).map(x => encodeURIComponent(String(x))).join(",")})`);
-              else if (notCond === null) filters.push(`${k}=not.is.null`);
+              const notCond = cond.not;
+              if (notCond === null) filters.push(`${k}=not.is.null`);
+              else if (typeof notCond === "object" && notCond !== null && "in" in notCond) {
+                const arr = (notCond as Record<string, unknown>).in as unknown[];
+                filters.push(`${k}=notin.(${arr.map(x => encodeURIComponent(String(x))).join(",")})`);
+              }
             }
           } else {
             filters.push(`${k}=eq.${encodeURIComponent(String(v))}`);
@@ -365,17 +371,30 @@ export const db = {
         if (filters.length > 0) path += filters.join("&") + "&";
       }
 
-      // OR conditions
-      if (where && "_or" in where) {
-        const orConds = (where._or as Record<string, unknown>[]).map(orWhere => {
+      // OR conditions (support both Prisma's OR and custom _or)
+      const orKey = where && "OR" in where ? "OR" : where && "_or" in where ? "_or" : null;
+      if (orKey) {
+        const orArr = (where as Record<string, unknown>)[orKey] as Record<string, unknown>[];
+        const orConds = orArr.map(orWhere => {
           return Object.entries(orWhere).map(([k, v]) => {
-            if (typeof v === "object" && v !== null && "contains" in v) {
-              return `${k}.ilike.%${encodeURIComponent(String((v as Record<string, unknown>).contains))}%`;
+            // Handle nested relation filters like { visitor: { fullName: { contains: "..." } } }
+            if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+              const nested = v as Record<string, unknown>;
+              // Check if it's a relation filter (has nested object with contains)
+              for (const [nk, nv] of Object.entries(nested)) {
+                if (typeof nv === "object" && nv !== null && "contains" in nv) {
+                  return `${k}.${nk}.ilike.%${encodeURIComponent(String((nv as Record<string, unknown>).contains))}%`;
+                }
+              }
+              // Check for direct contains
+              if ("contains" in nested) {
+                return `${k}.ilike.%${encodeURIComponent(String(nested.contains))}%`;
+              }
             }
             return `${k}.eq.${encodeURIComponent(String(v))}`;
           }).join(",");
         }).join(",");
-        path += `or=(${orConds})&`;
+        if (orConds) path += `or=(${orConds})&`;
       }
 
       path += `order=${Object.entries(orderBy || { createdAt: "desc" }).map(([k, v]) => `${k}.${v}`).join(",")}&`;
