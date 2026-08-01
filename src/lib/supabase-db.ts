@@ -205,19 +205,15 @@ export const db = {
         }
       }
       path += `select=${cols.join(",")}&`;
-      // Build order - support both simple and nested (e.g., { department: { name: "asc" } })
+      // Build order - PostgREST doesn't support nested relation ordering
+      // So we skip nested orderBy (e.g., { department: { name: "asc" } }) and use simple fields
       const orderParts: string[] = [];
       if (orderBy) {
         for (const [k, v] of Object.entries(orderBy)) {
-          if (typeof v === "object" && v !== null) {
-            // Nested order like { department: { name: "asc" } }
-            const nested = v as Record<string, string>;
-            for (const [nk, nv] of Object.entries(nested)) {
-              orderParts.push(`${k}.${nk}.${nv}`);
-            }
-          } else {
+          if (typeof v === "string") {
             orderParts.push(`${k}.${v}`);
           }
+          // Skip nested object orderBy (not supported by PostgREST)
         }
       }
       path += `order=${orderParts.length > 0 ? orderParts.join(",") : "role.asc,fullName.asc"}&limit=200`;
