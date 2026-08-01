@@ -5,8 +5,8 @@ export const translations = {
   bm: {
     // Common
     appName: "Sistem Pengurusan Pelawat",
-    appShortName: "VMS PLTT Bintulu",
-    organization: "Pusat Latihan Teknologi Tinggi Bintulu (PLTT Bintulu)",
+    appShortName: "VMS ADTEC Bintulu",
+    organization: "Kolej Teknologi Termaju Kampus Bintulu",
     agency: "Jabatan Tenaga Manusia (JTM)",
     welcome: "Selamat Datang",
     login: "Log Masuk",
@@ -48,7 +48,7 @@ export const translations = {
 
     // Landing
     landingTitle: "Sistem Pengurusan Masuk-Keluar Pelawat",
-    landingSubtitle: "Pengurusan pelawat digital bersepadu untuk PLTT Bintulu",
+    landingSubtitle: "Pengurusan pelawat digital bersepadu untuk ADTEC Bintulu",
     registerVisit: "Daftar Lawatan",
     checkStatus: "Semak Status",
     giveFeedback: "Beri Maklum Balas",
@@ -131,8 +131,8 @@ export const translations = {
   },
   en: {
     appName: "Visitor Management System",
-    appShortName: "VMS PLTT Bintulu",
-    organization: "Advanced Technology Training Centre Bintulu (PLTT Bintulu)",
+    appShortName: "VMS ADTEC Bintulu",
+    organization: "Advanced Technology Training College Bintulu Campus",
     agency: "Manpower Department (JTM)",
     welcome: "Welcome",
     login: "Login",
@@ -172,7 +172,7 @@ export const translations = {
     admin: "Admin / Supervisor",
 
     landingTitle: "Visitor Entry & Exit Management System",
-    landingSubtitle: "Integrated digital visitor management for PLTT Bintulu",
+    landingSubtitle: "Integrated digital visitor management for ADTEC Bintulu",
     registerVisit: "Register Visit",
     checkStatus: "Check Status",
     giveFeedback: "Give Feedback",

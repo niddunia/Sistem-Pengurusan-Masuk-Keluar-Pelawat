@@ -140,8 +140,8 @@ export function AdminSettings() {
               {lastUpdated
                 ? `${language === "bm" ? "Kemas kini terakhir: " : "Last updated: "}${lastUpdated.toLocaleString()}`
                 : language === "bm"
-                ? "Konfigurasi VMS PLTT Bintulu"
-                : "VMS PLTT Bintulu configuration"}
+                ? "Konfigurasi VMS ADTEC Bintulu"
+                : "VMS ADTEC Bintulu configuration"}
             </p>
           </div>
         </div>
@@ -311,14 +311,14 @@ export function AdminSettings() {
                 label={language === "bm" ? "Nama Organisasi" : "Organization Name"}
                 value={settings.organization_name || ""}
                 onChange={(v) => handleChange("organization_name", v)}
-                placeholder="Pusat Latihan Teknologi Tinggi Bintulu"
+                placeholder="Kolej Teknologi Termaju Kampus Bintulu"
               />
               <TextField
                 icon={<FileText className="w-3.5 h-3.5" />}
                 label={language === "bm" ? "Nama Ringkas" : "Short Name"}
                 value={settings.organization_short || ""}
                 onChange={(v) => handleChange("organization_short", v)}
-                placeholder="PLTT Bintulu"
+                placeholder="ADTEC Bintulu"
               />
             </div>
           </SettingsCard>

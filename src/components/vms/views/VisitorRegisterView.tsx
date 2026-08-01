@@ -731,8 +731,8 @@ export function VisitorRegisterView() {
                 <div className="text-sm font-bold text-amber-100 mb-1">{t("pdpaNotice", language)}</div>
                 <p className="text-xs text-amber-100/80 leading-relaxed">
                   {language === "bm"
-                    ? "Maklumat peribadi yang diberikan akan diproses selaras dengan Akta Perlindungan Data Peribadi 2010 (PDPA) untuk tujuan pengurusan lawatan di PLTT Bintulu."
-                    : "Personal data provided will be processed in accordance with the Personal Data Protection Act 2010 (PDPA) for visitor management purposes at PLTT Bintulu."}
+                    ? "Maklumat peribadi yang diberikan akan diproses selaras dengan Akta Perlindungan Data Peribadi 2010 (PDPA) untuk tujuan pengurusan lawatan di ADTEC Bintulu."
+                    : "Personal data provided will be processed in accordance with the Personal Data Protection Act 2010 (PDPA) for visitor management purposes at ADTEC Bintulu."}
                 </p>
               </div>
             </div>

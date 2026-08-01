@@ -73,7 +73,7 @@ export function LandingView() {
     {
       icon: Building2,
       label: language === "bm" ? "Organisasi" : "Organization",
-      value: "PLTT Bintulu",
+      value: "ADTEC Bintulu",
     },
     {
       icon: MapPin,
@@ -147,7 +147,7 @@ export function LandingView() {
                       {language === "bm" ? "Imbas untuk mula" : "Scan to begin"}
                     </div>
                     <div className="text-[10px] text-white/60 mt-1">
-                      VMS-PLTT-{new Date().getFullYear()}
+                      VMS-ADTEC-{new Date().getFullYear()}
                     </div>
                   </div>
                 </GlassCard>

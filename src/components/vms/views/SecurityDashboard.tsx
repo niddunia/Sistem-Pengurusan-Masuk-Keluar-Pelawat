@@ -282,8 +282,8 @@ export function SecurityDashboard() {
           </h1>
           <p className="text-sm text-white/70 mt-1">
             {language === "bm"
-              ? "Pusat kawalan pengawal keselamatan PLTT Bintulu"
-              : "Security guard control centre - PLTT Bintulu"}
+              ? "Pusat kawalan pengawal keselamatan ADTEC Bintulu"
+              : "Security guard control centre - ADTEC Bintulu"}
           </p>
         </div>
         <div className="flex items-center gap-3">

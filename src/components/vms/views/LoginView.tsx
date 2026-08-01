@@ -113,8 +113,8 @@ export function LoginView() {
           <h1 className="text-2xl font-bold text-white">{t("login", language)}</h1>
           <p className="text-sm text-white/70 mt-1">
             {language === "bm"
-              ? "Log masuk ke portal pegawai PLTT Bintulu"
-              : "Sign in to the PLTT Bintulu officer portal"}
+              ? "Log masuk ke portal pegawai ADTEC Bintulu"
+              : "Sign in to the ADTEC Bintulu officer portal"}
           </p>
         </div>
 
@@ -235,8 +235,8 @@ export function LoginView() {
 
       <p className="text-center text-xs text-white/60 mt-4">
         {language === "bm"
-          ? "Hanya untuk pegawai PLTT Bintulu yang berdaftar."
-          : "For registered PLTT Bintulu officers only."}
+          ? "Hanya untuk pegawai ADTEC Bintulu yang berdaftar."
+          : "For registered ADTEC Bintulu officers only."}
       </p>
     </div>
   );

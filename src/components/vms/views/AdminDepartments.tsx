@@ -203,8 +203,8 @@ export function AdminDepartments() {
             </h1>
             <p className="text-xs text-cyan-200/80">
               {language === "bm"
-                ? "Urus jabatan di PLTT Bintulu untuk pengagihan lawatan."
-                : "Manage departments at PLTT Bintulu for visit routing."}
+                ? "Urus jabatan di ADTEC Bintulu untuk pengagihan lawatan."
+                : "Manage departments at ADTEC Bintulu for visit routing."}
             </p>
           </div>
         </div>

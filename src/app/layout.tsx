@@ -18,17 +18,17 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "VMS PLTT Bintulu | Sistem Pengurusan Pelawat",
+  title: "VMS ADTEC Bintulu | Sistem Pengurusan Pelawat",
   description:
-    "Sistem Pengurusan Masuk-Keluar Pelawat - Pusat Latihan Teknologi Tinggi Bintulu, Jabatan Tenaga Manusia (JTM)",
+    "Sistem Pengurusan Masuk-Keluar Pelawat - Kolej Teknologi Termaju Kampus Bintulu, Jabatan Tenaga Manusia (JTM)",
   keywords: [
     "VMS",
-    "PLTT Bintulu",
+    "ADTEC Bintulu",
     "JTM",
     "Visitor Management",
     "Pengurusan Pelawat",
   ],
-  authors: [{ name: "PLTT Bintulu - JTM" }],
+  authors: [{ name: "ADTEC Bintulu - JTM" }],
   icons: {
     icon: "/logo.svg",
   },
