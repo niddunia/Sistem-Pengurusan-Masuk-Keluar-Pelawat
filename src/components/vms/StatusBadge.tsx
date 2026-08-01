@@ -55,10 +55,10 @@ export function RoleBadge({
   language?: "bm" | "en";
 }) {
   const labels: Record<string, { bm: string; en: string; color: string }> = {
-    admin: { bm: "Admin", en: "Admin", color: "bg-purple-500/20 text-purple-700 border-purple-500/30" },
-    security: { bm: "Pengawal", en: "Security", color: "bg-blue-500/20 text-blue-700 border-blue-500/30" },
-    staff: { bm: "Staf", en: "Staff", color: "bg-teal-500/20 text-teal-700 border-teal-500/30" },
-    visitor: { bm: "Pelawat", en: "Visitor", color: "bg-slate-500/20 text-slate-700 border-slate-500/30" },
+    admin: { bm: "Admin", en: "Admin", color: "bg-purple-400/20 text-purple-300 border-purple-400/30" },
+    security: { bm: "Pengawal", en: "Security", color: "bg-blue-400/20 text-blue-300 border-blue-400/30" },
+    staff: { bm: "Staf", en: "Staff", color: "bg-teal-400/20 text-teal-300 border-teal-400/30" },
+    visitor: { bm: "Pelawat", en: "Visitor", color: "bg-slate-400/20 text-slate-300 border-slate-400/30" },
   };
 
   const config = labels[role] || labels.visitor;
