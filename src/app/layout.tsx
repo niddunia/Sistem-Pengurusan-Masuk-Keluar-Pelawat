@@ -20,7 +20,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "VMS ADTEC Bintulu | Sistem Pengurusan Pelawat",
   description:
-    "Sistem Pengurusan Masuk-Keluar Pelawat - Kolej Teknologi Termaju Kampus Bintulu, Jabatan Tenaga Manusia (JTM)",
+    "Sistem Pengurusan Pelawat - Kolej Teknologi Termaju Kampus Bintulu, Jabatan Tenaga Manusia (JTM)",
   keywords: [
     "VMS",
     "ADTEC Bintulu",

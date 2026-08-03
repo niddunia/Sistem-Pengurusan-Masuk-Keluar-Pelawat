@@ -12,10 +12,10 @@ import {
   Building2,
   MapPin,
   Clock,
-  QrCode,
   ArrowRight,
   Info,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 export function LandingView() {
   const { language } = useUIStore();
@@ -134,13 +134,18 @@ export function LandingView() {
               </div>
             </div>
 
-            {/* QR placeholder */}
+            {/* Real QR Code - links to this site */}
             <div className="flex flex-col items-center justify-center gap-3">
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-br from-cyan-400/30 to-blue-600/30 rounded-3xl blur-2xl" />
                 <GlassCard variant="soft" className="relative p-6 sm:p-8 flex flex-col items-center gap-4">
-                  <div className="qr-container">
-                    <QrPlaceholder />
+                  <div className="qr-container bg-white p-3 rounded-xl">
+                    <QRCodeSVG
+                      value={typeof window !== "undefined" ? window.location.origin : "https://sistem-pengurusan-masuk-keluar-pela.vercel.app"}
+                      size={140}
+                      level="M"
+                      includeMargin={false}
+                    />
                   </div>
                   <div className="text-center">
                     <div className="text-xs font-semibold text-cyan-100 uppercase tracking-wide">
@@ -246,22 +251,4 @@ export function LandingView() {
   );
 }
 
-// Decorative QR-like grid placeholder
-function QrPlaceholder() {
-  const cells = Array.from({ length: 144 }, (_, i) => {
-    // pseudo-random but deterministic pattern
-    const seed = (i * 73 + 17) % 100;
-    return seed > 50;
-  });
-
-  return (
-    <div className="grid grid-cols-12 gap-[2px] w-36 h-36 sm:w-40 sm:h-40">
-      {cells.map((on, i) => (
-        <div
-          key={i}
-          className={on ? "bg-slate-900 rounded-[1px]" : "bg-white rounded-[1px]"}
-        />
-      ))}
-    </div>
-  );
-}
+// QrPlaceholder removed - now using real QRCodeSVG from qrcode.react

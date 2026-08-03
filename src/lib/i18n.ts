@@ -47,7 +47,7 @@ export const translations = {
     admin: "Admin / Penyelia",
 
     // Landing
-    landingTitle: "Sistem Pengurusan Masuk-Keluar Pelawat",
+    landingTitle: "Sistem Pengurusan Pelawat",
     landingSubtitle: "Pengurusan pelawat digital bersepadu untuk ADTEC Bintulu",
     registerVisit: "Daftar Lawatan",
     checkStatus: "Semak Status",
@@ -171,7 +171,7 @@ export const translations = {
     staff: "JTM Staff",
     admin: "Admin / Supervisor",
 
-    landingTitle: "Visitor Entry & Exit Management System",
+    landingTitle: "Visitor Management System",
     landingSubtitle: "Integrated digital visitor management for ADTEC Bintulu",
     registerVisit: "Register Visit",
     checkStatus: "Check Status",
