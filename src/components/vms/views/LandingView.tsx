@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouterStore, useUIStore } from "@/stores/router";
-import { GlassCard } from "@/components/vms/GlassCard";
+import { GlassCard, GlassButton } from "@/components/vms/GlassCard";
 import { t } from "@/lib/i18n";
 import {
   UserPlus,
@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Info,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 export function LandingView() {
   const { language } = useUIStore();
@@ -89,6 +90,74 @@ export function LandingView() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      {/* Hero with title + QR code */}
+      <section className="relative">
+        <GlassCard className="overflow-hidden p-6 sm:p-10 lg:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 items-center">
+            <div className="space-y-5 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-cyan-100 text-xs font-semibold">
+                <Shield className="w-3.5 h-3.5" />
+                {language === "bm" ? "SISTEM RASMI" : "OFFICIAL SYSTEM"}
+              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight text-readable">
+                {t("landingTitle", language)}
+              </h1>
+              <p className="text-base sm:text-lg text-white/85 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                {t("landingSubtitle", language)}
+              </p>
+              <p className="text-sm text-white/70">
+                {t("organization", language)} &middot; {t("agency", language)}
+              </p>
+
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start pt-2">
+                <GlassButton
+                  variant="primary"
+                  className="px-6 py-3 text-base min-h-[48px]"
+                  onClick={() => navigate("visitor-register")}
+                >
+                  <UserPlus className="w-5 h-5" />
+                  {t("registerVisit", language)}
+                  <ArrowRight className="w-4 h-4" />
+                </GlassButton>
+                <GlassButton
+                  variant="outline"
+                  className="px-6 py-3 text-base min-h-[48px] text-white"
+                  onClick={() => navigate("visitor-status")}
+                >
+                  <Search className="w-5 h-5" />
+                  {t("checkStatus", language)}
+                </GlassButton>
+              </div>
+            </div>
+
+            {/* Real QR Code - links to this site */}
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-br from-cyan-400/30 to-blue-600/30 rounded-3xl blur-2xl" />
+                <GlassCard variant="soft" className="relative p-6 sm:p-8 flex flex-col items-center gap-4">
+                  <div className="qr-container bg-white p-3 rounded-xl">
+                    <QRCodeSVG
+                      value={typeof window !== "undefined" ? window.location.origin : "https://sistem-pengurusan-masuk-keluar-pela.vercel.app"}
+                      size={140}
+                      level="M"
+                      includeMargin={false}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-semibold text-cyan-100 uppercase tracking-wide">
+                      {language === "bm" ? "Imbas untuk mula" : "Scan to begin"}
+                    </div>
+                    <div className="text-[10px] text-white/60 mt-1">
+                      VMS-ADTEC-{new Date().getFullYear()}
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+      </section>
+
       {/* Action cards - 4 column grid */}
       <section>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
