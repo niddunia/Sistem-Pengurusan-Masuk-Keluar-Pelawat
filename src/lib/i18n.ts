@@ -48,7 +48,7 @@ export const translations = {
 
     // Landing
     landingTitle: "Sistem Pengurusan Pelawat",
-    landingSubtitle: "Pengurusan pelawat digital bersepadu untuk ADTEC Bintulu",
+    landingSubtitle: "Pengurusan pelawat digital bersepadu untuk ADTEC JTM Kampus Bintulu",
     registerVisit: "Daftar Lawatan",
     checkStatus: "Semak Status",
     giveFeedback: "Beri Maklum Balas",
