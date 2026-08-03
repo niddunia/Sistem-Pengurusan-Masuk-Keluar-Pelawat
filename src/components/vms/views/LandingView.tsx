@@ -69,7 +69,7 @@ export function LandingView() {
     {
       icon: Building2,
       label: language === "bm" ? "Organisasi" : "Organization",
-      value: "ADTEC Bintulu",
+      value: "ADTEC JTM Kampus Bintulu",
     },
     {
       icon: MapPin,
